@@ -35,3 +35,8 @@ dev.db-journal
 # Uploads
 uploads/*
 !uploads/.gitkeep
+
+# Executables & Archives
+*.exe
+*.zip
+
