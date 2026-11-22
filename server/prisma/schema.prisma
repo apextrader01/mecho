@@ -1,0 +1,301 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id            String    @id @default(uuid())
+  phone         String    @unique
+  email         String?   @unique
+  name          String
+  passwordHash  String
+  role          String    @default("USER") // "USER" | "VENDOR" | "ADMIN"
+  preferredLang String    @default("en")   // "en" | "hi"
+  avatarUrl     String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  vendorProfile      VendorProfile?
+  dispatches         DispatchBooking[]    @relation("CustomerDispatches")
+  rfqs               QuotationRequest[]   @relation("CustomerRfqs")
+  commerceOrders     CommerceOrder[]      @relation("CustomerOrders")
+  subscriptions      Subscription[]       @relation("CustomerSubscriptions")
+  sentMessages       ChatMessage[]        @relation("SentMessages")
+  receivedMessages   ChatMessage[]        @relation("ReceivedMessages")
+  reviewsGiven       Review[]             @relation("UserReviews")
+}
+
+model VendorProfile {
+  id              String      @id @default(uuid())
+  userId          String      @unique
+  user            User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  businessName    String
+  businessType    String
+  categories      String
+  description     String?
+  address         String
+  city            String      @default("Bangalore")
+  latitude        Float
+  longitude       Float
+  serviceRadiusKm Float       @default(10.0)
+  
+  isOnline        Boolean     @default(true)
+  is24x7Emergency Boolean     @default(false)
+
+  kycStatus       String      @default("PENDING") // "PENDING" | "APPROVED" | "REJECTED"
+  kycDocumentUrl  String?
+  idProofNumber   String?
+
+  rating          Float       @default(4.8)
+  reviewCount     Int         @default(0)
+
+  dayRunnerFee    Float       @default(150.0)
+  nightRunnerFee  Float       @default(250.0)
+  perKmCharge     Float       @default(15.0)
+
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  assignedDispatches DispatchBooking[] @relation("VendorDispatches")
+  submittedQuotes    VendorQuote[]     @relation("VendorQuotes")
+  products           Product[]         @relation("VendorProducts")
+  fulfilledOrders    CommerceOrder[]   @relation("VendorOrders")
+  subscriptions      Subscription[]    @relation("VendorSubscriptions")
+  reviewsReceived    Review[]          @relation("VendorReviews")
+}
+
+model ServiceCategory {
+  id            String      @id @default(uuid())
+  slug          String      @unique
+  name          String
+  nameHi        String
+  description   String
+  icon          String
+  engineType    String      // "ENGINE_A_DISPATCH" | "ENGINE_B_QUOTE" | "ENGINE_C_COMMERCE" | "ENGINE_C_SUBSCRIPTION" | "ENGINE_C_APPOINTMENT"
+  basePrice     Float       @default(0.0)
+  pricingUnit   String?
+  metadata      String
+  isActive      Boolean     @default(true)
+  sortOrder     Int         @default(0)
+  createdAt     DateTime    @default(now())
+
+  dispatches    DispatchBooking[]
+  rfqs          QuotationRequest[]
+  products      Product[]
+}
+
+model DispatchBooking {
+  id                     String         @id @default(uuid())
+  bookingNumber          String         @unique
+  categoryId             String
+  category               ServiceCategory @relation(fields: [categoryId], references: [id])
+  customerId             String
+  customer               User           @relation("CustomerDispatches", fields: [customerId], references: [id])
+  vendorId               String?
+  vendor                 VendorProfile? @relation("VendorDispatches", fields: [vendorId], references: [id])
+  
+  status                 String         @default("REQUESTED") // "REQUESTED" | "ACCEPTED" | "ON_THE_WAY" | "IN_PROGRESS" | "COMPLETED" | "CANCELLED"
+
+  pickupLatitude         Float
+  pickupLongitude        Float
+  pickupAddress          String
+
+  dropLatitude           Float?
+  dropLongitude          Float?
+  dropAddress            String?
+
+  requestDetails         String
+
+  startOtp               String
+  endOtp                 String
+  startPhotoUrl          String?
+  completionPhotoUrl     String?
+  idVerified             Boolean        @default(false)
+
+  actualFuelReceiptAmount Float         @default(0.0)
+  runnerServiceFee       Float          @default(0.0)
+  totalAmount            Float          @default(0.0)
+  paymentMode            String         @default("UPI")
+  paymentStatus          String         @default("PENDING") // "PENDING" | "PAID" | "COD_PENDING" | "REFUNDED"
+
+  acceptedAt             DateTime?
+  startedAt              DateTime?
+  completedAt            DateTime?
+  createdAt              DateTime       @default(now())
+  updatedAt              DateTime       @updatedAt
+
+  chatMessages           ChatMessage[]  @relation("DispatchChat")
+  review                 Review?
+}
+
+model QuotationRequest {
+  id              String         @id @default(uuid())
+  rfqNumber       String         @unique
+  categoryId      String
+  category        ServiceCategory @relation(fields: [categoryId], references: [id])
+  customerId      String
+  customer        User           @relation("CustomerRfqs", fields: [customerId], references: [id])
+
+  title           String
+  description     String
+  locationLat     Float
+  locationLng     Float
+  locationAddress String
+  
+  specifications  String
+  attachments     String
+
+  status          String         @default("OPEN") // "OPEN" | "QUOTES_RECEIVED" | "ACCEPTED" | "IN_PROGRESS" | "COMPLETED" | "CANCELLED"
+  selectedQuoteId String?
+  
+  createdAt       DateTime       @default(now())
+  expiresAt       DateTime?
+
+  quotes          VendorQuote[]
+  chatMessages    ChatMessage[]  @relation("RfqChat")
+  review          Review?
+}
+
+model VendorQuote {
+  id              String           @id @default(uuid())
+  rfqId           String
+  rfq             QuotationRequest @relation(fields: [rfqId], references: [id], onDelete: Cascade)
+  vendorId        String
+  vendor          VendorProfile    @relation("VendorQuotes", fields: [vendorId], references: [id])
+
+  materialCost    Float            @default(0.0)
+  laborCost       Float            @default(0.0)
+  deliveryCost    Float            @default(0.0)
+  taxes           Float            @default(0.0)
+  totalAmount     Float
+
+  estimatedDays   Int
+  proposalDetails String
+  status          String           @default("SUBMITTED") // "SUBMITTED" | "SHORTLISTED" | "ACCEPTED" | "REJECTED"
+  validUntil      DateTime?
+
+  createdAt       DateTime         @default(now())
+}
+
+model Product {
+  id          String          @id @default(uuid())
+  vendorId    String
+  vendor      VendorProfile   @relation("VendorProducts", fields: [vendorId], references: [id], onDelete: Cascade)
+  categoryId  String
+  category    ServiceCategory @relation(fields: [categoryId], references: [id])
+  
+  name        String
+  nameHi      String?
+  description String?
+  price       Float
+  unit        String
+  inStock     Boolean         @default(true)
+  imageUrl    String?
+
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  subscriptions Subscription[]
+}
+
+model CommerceOrder {
+  id              String         @id @default(uuid())
+  orderNumber     String         @unique
+  customerId      String
+  customer        User           @relation("CustomerOrders", fields: [customerId], references: [id])
+  vendorId        String
+  vendor          VendorProfile  @relation("VendorOrders", fields: [vendorId], references: [id])
+
+  items           String
+  subtotal        Float
+  deliveryFee     Float          @default(0.0)
+  totalAmount     Float
+
+  deliveryAddress String
+  deliveryLat     Float
+  deliveryLng     Float
+
+  status          String         @default("PLACED") // "PLACED" | "CONFIRMED" | "OUT_FOR_DELIVERY" | "DELIVERED" | "CANCELLED"
+  deliveryOtp     String
+  proofPhotoUrl   String?
+  paymentStatus   String         @default("PENDING")
+  paymentMode     String         @default("UPI")
+
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+}
+
+model Subscription {
+  id                  String               @id @default(uuid())
+  subNumber           String               @unique
+  customerId          String
+  customer            User                 @relation("CustomerSubscriptions", fields: [customerId], references: [id])
+  vendorId            String
+  vendor              VendorProfile        @relation("VendorSubscriptions", fields: [vendorId], references: [id])
+  productId           String
+  product             Product              @relation(fields: [productId], references: [id])
+
+  frequency           String               @default("DAILY") // "DAILY" | "ALTERNATE_DAYS" | "WEEKDAYS_ONLY" | "WEEKLY"
+  timeSlot            String
+  quantityPerDelivery Int                  @default(1)
+  deliveryAddress     String
+  deliveryLat         Float
+  deliveryLng         Float
+
+  status              String               @default("ACTIVE") // "ACTIVE" | "PAUSED" | "CANCELLED"
+  startDate           DateTime             @default(now())
+  endDate             DateTime?
+
+  createdAt           DateTime             @default(now())
+  deliveries          SubscriptionDelivery[]
+}
+
+model SubscriptionDelivery {
+  id              String        @id @default(uuid())
+  subscriptionId  String
+  subscription    Subscription  @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+  deliveryDate    DateTime
+  status          String        @default("SCHEDULED")
+  deliveredAt     DateTime?
+  proofPhotoUrl   String?
+  deliveryOtp     String?
+}
+
+model ChatMessage {
+  id          String            @id @default(uuid())
+  senderId    String
+  sender      User              @relation("SentMessages", fields: [senderId], references: [id])
+  receiverId  String
+  receiver    User              @relation("ReceivedMessages", fields: [receiverId], references: [id])
+
+  dispatchId  String?
+  dispatch    DispatchBooking?  @relation("DispatchChat", fields: [dispatchId], references: [id])
+  rfqId       String?
+  rfq         QuotationRequest? @relation("RfqChat", fields: [rfqId], references: [id])
+
+  message     String
+  imageUrl    String?
+  isRead      Boolean           @default(false)
+  createdAt   DateTime          @default(now())
+}
+
+model Review {
+  id          String            @id @default(uuid())
+  customerId  String
+  customer    User              @relation("UserReviews", fields: [customerId], references: [id])
+  vendorId    String
+  vendor      VendorProfile     @relation("VendorReviews", fields: [vendorId], references: [id])
+
+  dispatchId  String?           @unique
+  dispatch    DispatchBooking?  @relation(fields: [dispatchId], references: [id])
+  rfqId       String?           @unique
+  rfq         QuotationRequest? @relation(fields: [rfqId], references: [id])
+
+  rating      Int
+  comment     String?
+  createdAt   DateTime          @default(now())
+}
