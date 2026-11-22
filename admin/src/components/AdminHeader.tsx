@@ -66,6 +66,8 @@ export default function AdminHeader({ activeTab, setActiveTab }: AdminHeaderProp
         {[
           { id: 'kyc', label: 'Vendor KYC Approvals', icon: '🛡️' },
           { id: 'dispatches', label: 'Live Operations & Map', icon: '🗺️' },
+          { id: 'customers', label: 'Customer Database', icon: '👥' },
+          { id: 'vendors', label: 'Vendor Roster & Fleet', icon: '🏪' },
           { id: 'categories', label: 'Dynamic Category & Fees Manager', icon: '⚙️' }
         ].map((tab) => (
           <button

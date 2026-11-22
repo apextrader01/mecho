@@ -3,14 +3,21 @@
 import React, { useState } from 'react';
 import { useVendorAuth } from '../context/VendorAuthContext';
 import { VENDOR_SUPPORTED_LANGUAGES, Language } from '../lib/i18n';
-import { Power, Globe, ShieldCheck, MapPin, ShieldAlert, ChevronDown } from 'lucide-react';
+import { Power, Globe, ShieldCheck, MapPin, ShieldAlert, ChevronDown, User, KeyRound, Building } from 'lucide-react';
 
 interface VendorHeaderProps {
   activeTab: string;
   setActiveTab: (tab: string) => void;
+  onOpenAuthModal?: () => void;
+  onOpenProfileDrawer?: () => void;
 }
 
-export default function VendorHeader({ activeTab, setActiveTab }: VendorHeaderProps) {
+export default function VendorHeader({
+  activeTab,
+  setActiveTab,
+  onOpenAuthModal,
+  onOpenProfileDrawer
+}: VendorHeaderProps) {
   const { vendor, lang, setLang, t, toggleOnline, toggleEmergency247, loginAsVendor } = useVendorAuth();
   const [langMenuOpen, setLangMenuOpen] = useState(false);
 
@@ -89,9 +96,12 @@ export default function VendorHeader({ activeTab, setActiveTab }: VendorHeaderPr
 
       {/* Main Bar */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex flex-col md:flex-row md:items-center justify-between gap-4">
-        {/* Partner Info */}
-        <div className="flex items-center gap-3">
-          <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-sky-600 to-blue-500 flex items-center justify-center font-black text-xl shadow-md">
+        {/* Partner Info (Clickable to open profile drawer) */}
+        <div
+          onClick={onOpenProfileDrawer}
+          className="flex items-center gap-3 cursor-pointer group hover:opacity-90 transition-opacity"
+        >
+          <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-sky-600 to-blue-500 flex items-center justify-center font-black text-xl shadow-md group-hover:scale-105 transition-transform">
             {vendor?.businessName?.charAt(0) || 'P'}
           </div>
           <div>
@@ -107,13 +117,33 @@ export default function VendorHeader({ activeTab, setActiveTab }: VendorHeaderPr
             <p className="text-xs text-slate-400 flex items-center gap-1 mt-0.5">
               <MapPin className="w-3 h-3 text-sky-400" />
               <span className="truncate max-w-[280px]">{vendor?.address}</span>
-              <span>• Service Radius: {vendor?.serviceRadiusKm} km</span>
+              <span>• Radius: {vendor?.serviceRadiusKm} km</span>
             </p>
           </div>
         </div>
 
-        {/* 24/7 Availability Toggles */}
-        <div className="flex items-center gap-3">
+        {/* 24/7 Availability Toggles & Account Button */}
+        <div className="flex items-center gap-2">
+          {/* Account Profile Trigger */}
+          {vendor ? (
+            <button
+              onClick={onOpenProfileDrawer}
+              className="px-3 py-2 rounded-xl text-xs font-bold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition-colors flex items-center gap-1.5"
+              title="Partner Business Settings"
+            >
+              <Building className="w-3.5 h-3.5 text-orange-400" />
+              <span className="hidden sm:inline">Settings</span>
+            </button>
+          ) : (
+            <button
+              onClick={onOpenAuthModal}
+              className="px-3 py-2 rounded-xl text-xs font-bold bg-orange-600 hover:bg-orange-700 text-white transition-colors flex items-center gap-1.5"
+            >
+              <KeyRound className="w-3.5 h-3.5" />
+              <span>Partner Login</span>
+            </button>
+          )}
+
           {/* Online Toggle */}
           <button
             onClick={() => toggleOnline(!vendor?.isOnline)}

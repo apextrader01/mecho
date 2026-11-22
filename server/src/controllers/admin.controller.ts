@@ -238,3 +238,26 @@ export async function getLiveDispatchesMap(req: AuthenticatedRequest, res: Respo
     return res.status(500).json({ success: false, error: error.message });
   }
 }
+
+export async function getCustomersList(req: AuthenticatedRequest, res: Response) {
+  try {
+    const customers = await prisma.user.findMany({
+      where: { role: 'USER' },
+      include: {
+        _count: {
+          select: {
+            dispatches: true,
+            rfqs: true,
+            subscriptions: true,
+            commerceOrders: true
+          }
+        }
+      },
+      orderBy: { createdAt: 'desc' }
+    });
+
+    return res.json({ success: true, customers });
+  } catch (error: any) {
+    return res.status(500).json({ success: false, error: error.message });
+  }
+}

@@ -7,11 +7,17 @@ import QuoteRequestsFeed from '../components/QuoteRequestsFeed';
 import SubscriptionManager from '../components/SubscriptionManager';
 import EarningsSummary from '../components/EarningsSummary';
 import VendorChatModal from '../components/VendorChatModal';
+import VendorAuthModal from '../components/VendorAuthModal';
+import VendorProfileDrawer from '../components/VendorProfileDrawer';
 
 export default function VendorHomePage() {
   const [activeTab, setActiveTab] = useState<string>('dispatches');
   const [chatOpen, setChatOpen] = useState(false);
   const [chatContext, setChatContext] = useState<any>(null);
+
+  // Vendor Account Modals
+  const [authModalOpen, setAuthModalOpen] = useState(false);
+  const [profileDrawerOpen, setProfileDrawerOpen] = useState(false);
 
   const handleOpenChat = (context: any) => {
     setChatContext(context);
@@ -20,7 +26,12 @@ export default function VendorHomePage() {
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-50/50">
-      <VendorHeader activeTab={activeTab} setActiveTab={setActiveTab} />
+      <VendorHeader
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        onOpenAuthModal={() => setAuthModalOpen(true)}
+        onOpenProfileDrawer={() => setProfileDrawerOpen(true)}
+      />
 
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-6">
         {activeTab === 'dispatches' && (
@@ -40,6 +51,20 @@ export default function VendorHomePage() {
         )}
       </main>
 
+      {/* Partner Onboarding / Login Modal */}
+      <VendorAuthModal
+        isOpen={authModalOpen}
+        onClose={() => setAuthModalOpen(false)}
+      />
+
+      {/* Partner Business Settings Drawer */}
+      <VendorProfileDrawer
+        isOpen={profileDrawerOpen}
+        onClose={() => setProfileDrawerOpen(false)}
+        onOpenLogin={() => setAuthModalOpen(true)}
+      />
+
+      {/* In-App Negotiation Chat */}
       <VendorChatModal
         isOpen={chatOpen}
         onClose={() => setChatOpen(false)}
