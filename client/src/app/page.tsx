@@ -10,6 +10,7 @@ import OrdersTracker from '../components/OrdersTracker';
 import ChatModal from '../components/ChatModal';
 import AuthModal from '../components/AuthModal';
 import ProfileDrawer from '../components/ProfileDrawer';
+import InstallAppBanner from '../components/InstallAppBanner';
 
 export default function HomePage() {
   const [activeTab, setActiveTab] = useState<string>('explore');
@@ -52,6 +53,9 @@ export default function HomePage() {
         onOpenAuthModal={() => setAuthModalOpen(true)}
         onOpenProfileDrawer={() => setProfileDrawerOpen(true)}
       />
+
+      {/* PWA Mobile App Install & Push Notification Banner */}
+      <InstallAppBanner />
 
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-6">
         {/* Top Sticky Quick SOS Section always accessible */}

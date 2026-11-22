@@ -9,6 +9,7 @@ import EarningsSummary from '../components/EarningsSummary';
 import VendorChatModal from '../components/VendorChatModal';
 import VendorAuthModal from '../components/VendorAuthModal';
 import VendorProfileDrawer from '../components/VendorProfileDrawer';
+import VendorInstallAppBanner from '../components/VendorInstallAppBanner';
 
 export default function VendorHomePage() {
   const [activeTab, setActiveTab] = useState<string>('dispatches');
@@ -32,6 +33,9 @@ export default function VendorHomePage() {
         onOpenAuthModal={() => setAuthModalOpen(true)}
         onOpenProfileDrawer={() => setProfileDrawerOpen(true)}
       />
+
+      {/* PWA Partner Mobile App Install & Siren Alerts Banner */}
+      <VendorInstallAppBanner />
 
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-6">
         {activeTab === 'dispatches' && (
