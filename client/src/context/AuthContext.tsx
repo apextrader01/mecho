@@ -17,7 +17,7 @@ interface AuthContextType {
   user: User | null;
   token: string | null;
   lang: Language;
-  t: typeof translations['en'];
+  t: any;
   setLang: (lang: Language) => void;
   loginAsDemoUser: (email: string) => Promise<void>;
   logout: () => void;
@@ -30,7 +30,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
-  const [lang, setLangState] = useState<Language>('en');
+  const [lang, setLangState] = useState<Language>('en'); // STRICTLY DEFAULT ENGLISH
   const [userCoords, setUserCoords] = useState({
     lat: 12.9784,
     lng: 77.6408,
@@ -74,8 +74,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     const savedLang = localStorage.getItem('shortedge_lang') as Language;
-    if (savedLang && (savedLang === 'en' || savedLang === 'hi')) {
+    if (savedLang && translations[savedLang]) {
       setLangState(savedLang);
+    } else {
+      setLangState('en'); // DEFAULT ENGLISH
     }
 
     const savedToken = localStorage.getItem('shortedge_token');
@@ -84,7 +86,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setToken(savedToken);
       setUser(JSON.parse(savedUser));
     } else {
-      // Auto login as default seeded customer Rahul Sharma
       loginAsDemoUser('rahul.sharma@gmail.com');
     }
   }, []);

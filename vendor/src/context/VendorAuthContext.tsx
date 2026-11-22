@@ -8,7 +8,7 @@ interface VendorContextType {
   vendor: any | null;
   token: string | null;
   lang: Language;
-  t: typeof vendorTranslations['en'];
+  t: any;
   setLang: (lang: Language) => void;
   loginAsVendor: (email: string) => Promise<void>;
   toggleOnline: (isOnline: boolean) => Promise<void>;
@@ -21,7 +21,7 @@ const VendorAuthContext = createContext<VendorContextType | undefined>(undefined
 export function VendorAuthProvider({ children }: { children: React.ReactNode }) {
   const [vendor, setVendor] = useState<any | null>(null);
   const [token, setToken] = useState<string | null>(null);
-  const [lang, setLangState] = useState<Language>('hi'); // Default Hindi for Indian vendors!
+  const [lang, setLangState] = useState<Language>('en'); // STRICTLY DEFAULT TO ENGLISH!
 
   const setLang = (newLang: Language) => {
     setLangState(newLang);
@@ -43,7 +43,6 @@ export function VendorAuthProvider({ children }: { children: React.ReactNode }) 
       if (res.token && res.user) {
         setToken(res.token);
         localStorage.setItem('shortedge_vendor_token', res.token);
-        // Load full vendor profile
         await refreshProfile();
       }
     } catch (err) {
@@ -92,14 +91,17 @@ export function VendorAuthProvider({ children }: { children: React.ReactNode }) 
 
   useEffect(() => {
     const savedLang = localStorage.getItem('shortedge_vendor_lang') as Language;
-    if (savedLang) setLangState(savedLang);
+    if (savedLang && vendorTranslations[savedLang]) {
+      setLangState(savedLang);
+    } else {
+      setLangState('en'); // DEFAULT ENGLISH
+    }
 
     const savedToken = localStorage.getItem('shortedge_vendor_token');
     if (savedToken) {
       setToken(savedToken);
       refreshProfile();
     } else {
-      // Default to Sharma Quick Rescue & Fuel Runner
       loginAsVendor('sharma.rescue@gmail.com');
     }
   }, []);

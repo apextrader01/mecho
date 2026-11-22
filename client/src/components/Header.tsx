@@ -1,8 +1,9 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { MapPin, Globe, ShieldAlert, ShoppingBag, FileText, UserCheck } from 'lucide-react';
+import { SUPPORTED_LANGUAGES, Language } from '../lib/i18n';
+import { MapPin, Globe, ShieldAlert, ShoppingBag, FileText, UserCheck, ChevronDown } from 'lucide-react';
 
 interface HeaderProps {
   activeTab: string;
@@ -12,39 +13,56 @@ interface HeaderProps {
 
 export default function Header({ activeTab, setActiveTab, openSosModal }: HeaderProps) {
   const { user, lang, setLang, t, userCoords, loginAsDemoUser } = useAuth();
+  const [langMenuOpen, setLangMenuOpen] = useState(false);
+
+  const currentLang = SUPPORTED_LANGUAGES.find(l => l.code === lang) || SUPPORTED_LANGUAGES[0];
 
   return (
     <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-sm">
-      {/* Top Banner: Emergency Highway Assist Hotline & Language Switcher */}
+      {/* Top Banner: Regional 7+ Language Selector & City Indicator */}
       <div className="bg-slate-900 text-white text-xs px-4 py-1.5 flex justify-between items-center">
         <div className="flex items-center gap-2">
           <span className="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
           <span className="font-medium text-slate-200">
-            24/7 Hyperlocal Live Network: <strong className="text-white">Bangalore Hub</strong>
+            24/7 Hyperlocal Network: <strong className="text-white">Bangalore Hub</strong>
           </span>
         </div>
 
         <div className="flex items-center gap-3">
-          {/* Language Switcher */}
-          <div className="flex items-center gap-1 bg-slate-800 rounded px-2 py-0.5 border border-slate-700">
-            <Globe className="w-3.5 h-3.5 text-orange-400" />
+          {/* Top Multi-Language Selector Dropdown (Top 7+ Indian Languages) */}
+          <div className="relative">
             <button
-              onClick={() => setLang('en')}
-              className={`px-1.5 py-0.5 rounded text-xs font-semibold ${
-                lang === 'en' ? 'bg-orange-600 text-white' : 'text-slate-300 hover:text-white'
-              }`}
+              onClick={() => setLangMenuOpen(!langMenuOpen)}
+              className="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 px-2.5 py-1 rounded-lg border border-slate-700 text-xs font-bold transition-colors"
             >
-              EN
+              <Globe className="w-3.5 h-3.5 text-orange-400" />
+              <span>{currentLang.nativeLabel}</span>
+              <span className="text-slate-400 font-normal">({currentLang.label})</span>
+              <ChevronDown className="w-3 h-3 text-slate-400" />
             </button>
-            <span className="text-slate-500">|</span>
-            <button
-              onClick={() => setLang('hi')}
-              className={`px-1.5 py-0.5 rounded text-xs font-semibold ${
-                lang === 'hi' ? 'bg-orange-600 text-white' : 'text-slate-300 hover:text-white'
-              }`}
-            >
-              हिंदी
-            </button>
+
+            {langMenuOpen && (
+              <div className="absolute right-0 mt-1.5 w-44 bg-slate-900 border border-slate-700 rounded-xl shadow-2xl py-1 z-50 animate-in fade-in zoom-in-95 duration-100">
+                <div className="px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-slate-400 border-b border-slate-800">
+                  Select Language
+                </div>
+                {SUPPORTED_LANGUAGES.map((l) => (
+                  <button
+                    key={l.code}
+                    onClick={() => {
+                      setLang(l.code);
+                      setLangMenuOpen(false);
+                    }}
+                    className={`w-full text-left px-3 py-1.5 text-xs flex items-center justify-between hover:bg-slate-800 transition-colors ${
+                      lang === l.code ? 'text-orange-400 font-bold bg-slate-800/60' : 'text-slate-200'
+                    }`}
+                  >
+                    <span>{l.nativeLabel}</span>
+                    <span className="text-[10px] text-slate-400">{l.label}</span>
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Quick Demo Switcher */}

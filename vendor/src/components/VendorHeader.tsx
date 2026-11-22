@@ -1,8 +1,9 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useVendorAuth } from '../context/VendorAuthContext';
-import { Power, Globe, ShieldCheck, MapPin, Phone, ShieldAlert } from 'lucide-react';
+import { VENDOR_SUPPORTED_LANGUAGES, Language } from '../lib/i18n';
+import { Power, Globe, ShieldCheck, MapPin, ShieldAlert, ChevronDown } from 'lucide-react';
 
 interface VendorHeaderProps {
   activeTab: string;
@@ -11,10 +12,13 @@ interface VendorHeaderProps {
 
 export default function VendorHeader({ activeTab, setActiveTab }: VendorHeaderProps) {
   const { vendor, lang, setLang, t, toggleOnline, toggleEmergency247, loginAsVendor } = useVendorAuth();
+  const [langMenuOpen, setLangMenuOpen] = useState(false);
+
+  const currentLang = VENDOR_SUPPORTED_LANGUAGES.find(l => l.code === lang) || VENDOR_SUPPORTED_LANGUAGES[0];
 
   return (
     <header className="sticky top-0 z-40 bg-slate-900 text-white border-b border-slate-800 shadow-lg">
-      {/* Top Banner: Quick Partner Persona Switcher & Language Switcher */}
+      {/* Top Banner: Partner Switcher & Multi-Language Selector */}
       <div className="bg-slate-950 px-4 py-1.5 flex flex-wrap justify-between items-center text-xs text-slate-400 border-b border-slate-800 gap-2">
         <div className="flex items-center gap-2">
           <span>Switch Partner View:</span>
@@ -46,26 +50,40 @@ export default function VendorHeader({ activeTab, setActiveTab }: VendorHeaderPr
           </button>
         </div>
 
-        {/* Language Switcher */}
-        <div className="flex items-center gap-1.5 bg-slate-800 px-2 py-0.5 rounded border border-slate-700">
-          <Globe className="w-3.5 h-3.5 text-orange-400" />
+        {/* Top 7+ Indian Language Selector Dropdown */}
+        <div className="relative">
           <button
-            onClick={() => setLang('hi')}
-            className={`px-1.5 py-0.5 rounded text-xs font-bold ${
-              lang === 'hi' ? 'bg-orange-600 text-white' : 'text-slate-300 hover:text-white'
-            }`}
+            onClick={() => setLangMenuOpen(!langMenuOpen)}
+            className="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 px-2.5 py-1 rounded-lg border border-slate-700 text-xs font-bold transition-colors text-white"
           >
-            हिंदी
+            <Globe className="w-3.5 h-3.5 text-orange-400" />
+            <span>{currentLang.nativeLabel}</span>
+            <span className="text-slate-400 font-normal">({currentLang.label})</span>
+            <ChevronDown className="w-3 h-3 text-slate-400" />
           </button>
-          <span>|</span>
-          <button
-            onClick={() => setLang('en')}
-            className={`px-1.5 py-0.5 rounded text-xs font-bold ${
-              lang === 'en' ? 'bg-orange-600 text-white' : 'text-slate-300 hover:text-white'
-            }`}
-          >
-            EN
-          </button>
+
+          {langMenuOpen && (
+            <div className="absolute right-0 mt-1.5 w-44 bg-slate-900 border border-slate-700 rounded-xl shadow-2xl py-1 z-50 animate-in fade-in zoom-in-95 duration-100">
+              <div className="px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-slate-400 border-b border-slate-800">
+                Select Language
+              </div>
+              {VENDOR_SUPPORTED_LANGUAGES.map((l) => (
+                <button
+                  key={l.code}
+                  onClick={() => {
+                    setLang(l.code);
+                    setLangMenuOpen(false);
+                  }}
+                  className={`w-full text-left px-3 py-1.5 text-xs flex items-center justify-between hover:bg-slate-800 transition-colors ${
+                    lang === l.code ? 'text-orange-400 font-bold bg-slate-800/60' : 'text-slate-200'
+                  }`}
+                >
+                  <span>{l.nativeLabel}</span>
+                  <span className="text-[10px] text-slate-400">{l.label}</span>
+                </button>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 
