@@ -26,7 +26,7 @@ export function VendorAuthProvider({ children }: { children: React.ReactNode }) 
   const setLang = (newLang: Language) => {
     setLangState(newLang);
     if (typeof window !== 'undefined') {
-      localStorage.setItem('shortedge_vendor_lang', newLang);
+      localStorage.setItem('shortedge_vendor_lang_v2', newLang);
     }
   };
 
@@ -90,11 +90,11 @@ export function VendorAuthProvider({ children }: { children: React.ReactNode }) 
   };
 
   useEffect(() => {
-    const savedLang = localStorage.getItem('shortedge_vendor_lang') as Language;
+    const savedLang = localStorage.getItem('shortedge_vendor_lang_v2') as Language;
     if (savedLang && vendorTranslations[savedLang]) {
       setLangState(savedLang);
     } else {
-      setLangState('en'); // DEFAULT ENGLISH
+      setLangState('en'); // STRICT DEFAULT TO ENGLISH
     }
 
     const savedToken = localStorage.getItem('shortedge_vendor_token');

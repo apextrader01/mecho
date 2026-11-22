@@ -40,7 +40,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const setLang = (newLang: Language) => {
     setLangState(newLang);
     if (typeof window !== 'undefined') {
-      localStorage.setItem('shortedge_lang', newLang);
+      localStorage.setItem('shortedge_lang_v2', newLang);
     }
   };
 
@@ -73,11 +73,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   useEffect(() => {
-    const savedLang = localStorage.getItem('shortedge_lang') as Language;
+    const savedLang = localStorage.getItem('shortedge_lang_v2') as Language;
     if (savedLang && translations[savedLang]) {
       setLangState(savedLang);
     } else {
-      setLangState('en'); // DEFAULT ENGLISH
+      setLangState('en'); // STRICT DEFAULT TO ENGLISH
     }
 
     const savedToken = localStorage.getItem('shortedge_token');
