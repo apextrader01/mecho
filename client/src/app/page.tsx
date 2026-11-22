@@ -8,10 +8,16 @@ import QuotesHub from '../components/QuotesHub';
 import CommerceSection from '../components/CommerceSection';
 import OrdersTracker from '../components/OrdersTracker';
 import ChatModal from '../components/ChatModal';
+import AuthModal from '../components/AuthModal';
+import ProfileDrawer from '../components/ProfileDrawer';
 
 export default function HomePage() {
   const [activeTab, setActiveTab] = useState<string>('explore');
   const [sosModal, setSosModal] = useState<'fuel' | 'puncture' | null>(null);
+
+  // Customer Account & Profile Modals
+  const [authModalOpen, setAuthModalOpen] = useState(false);
+  const [profileDrawerOpen, setProfileDrawerOpen] = useState(false);
 
   // In-App Chat Modal Context
   const [chatOpen, setChatOpen] = useState(false);
@@ -43,6 +49,8 @@ export default function HomePage() {
         activeTab={activeTab}
         setActiveTab={setActiveTab}
         openSosModal={(type) => setSosModal(type)}
+        onOpenAuthModal={() => setAuthModalOpen(true)}
+        onOpenProfileDrawer={() => setProfileDrawerOpen(true)}
       />
 
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-6">
@@ -98,6 +106,19 @@ export default function HomePage() {
           </button>
         ))}
       </div>
+
+      {/* Customer Authentication & Login Modal */}
+      <AuthModal
+        isOpen={authModalOpen}
+        onClose={() => setAuthModalOpen(false)}
+      />
+
+      {/* Customer Account & Profile Drawer */}
+      <ProfileDrawer
+        isOpen={profileDrawerOpen}
+        onClose={() => setProfileDrawerOpen(false)}
+        onOpenLogin={() => setAuthModalOpen(true)}
+      />
 
       {/* In-App Chat & Negotiation Drawer */}
       <ChatModal

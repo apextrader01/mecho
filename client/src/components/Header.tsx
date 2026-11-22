@@ -3,15 +3,23 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { SUPPORTED_LANGUAGES, Language } from '../lib/i18n';
-import { MapPin, Globe, ShieldAlert, ShoppingBag, FileText, UserCheck, ChevronDown } from 'lucide-react';
+import { MapPin, Globe, ShieldAlert, ShoppingBag, FileText, UserCheck, ChevronDown, User, KeyRound } from 'lucide-react';
 
 interface HeaderProps {
   activeTab: string;
   setActiveTab: (tab: string) => void;
   openSosModal: (type: 'fuel' | 'puncture') => void;
+  onOpenAuthModal?: () => void;
+  onOpenProfileDrawer?: () => void;
 }
 
-export default function Header({ activeTab, setActiveTab, openSosModal }: HeaderProps) {
+export default function Header({
+  activeTab,
+  setActiveTab,
+  openSosModal,
+  onOpenAuthModal,
+  onOpenProfileDrawer
+}: HeaderProps) {
   const { user, lang, setLang, t, userCoords, loginAsDemoUser } = useAuth();
   const [langMenuOpen, setLangMenuOpen] = useState(false);
 
@@ -154,8 +162,29 @@ export default function Header({ activeTab, setActiveTab, openSosModal }: Header
           </button>
         </nav>
 
-        {/* SOS Quick Trigger Button */}
+        {/* Right Actions: Account Profile + SOS Button */}
         <div className="flex items-center gap-2">
+          {user ? (
+            <button
+              onClick={onOpenProfileDrawer}
+              className="flex items-center gap-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 px-3 py-2 rounded-xl text-xs font-bold transition-all border border-slate-200 shadow-sm"
+              title="Open My Customer Profile"
+            >
+              <div className="w-5 h-5 rounded-full bg-orange-600 text-white flex items-center justify-center text-[10px] font-black">
+                {user.name?.charAt(0) || 'U'}
+              </div>
+              <span className="hidden sm:inline font-black">{user.name?.split(' ')[0]}</span>
+            </button>
+          ) : (
+            <button
+              onClick={onOpenAuthModal}
+              className="flex items-center gap-1.5 bg-orange-50 hover:bg-orange-100 text-orange-700 px-3 py-2 rounded-xl text-xs font-bold transition-all border border-orange-200 shadow-sm"
+            >
+              <KeyRound className="w-3.5 h-3.5" />
+              <span>Login</span>
+            </button>
+          )}
+
           <button
             onClick={() => openSosModal('fuel')}
             className="flex items-center gap-1.5 bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-700 hover:to-rose-700 text-white px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-bold shadow-md shadow-red-500/20 active:scale-95 transition-all"
