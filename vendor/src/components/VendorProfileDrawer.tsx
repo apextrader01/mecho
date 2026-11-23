@@ -260,59 +260,62 @@ export default function VendorProfileDrawer({ isOpen, onClose, onOpenLogin }: Ve
                 Switch Partner Persona
               </h5>
               <div className="space-y-2">
-                <button
-                  onClick={async () => {
-                    await loginAsVendor('sharma.rescue@gmail.com');
-                    onClose();
-                  }}
-                  className={`w-full p-2.5 rounded-2xl border text-left text-xs transition-all flex items-center justify-between ${
-                    vendor?.user?.email === 'sharma.rescue@gmail.com'
-                      ? 'bg-orange-600/20 border-orange-500 font-bold text-orange-300'
-                      : 'bg-slate-800/80 border-slate-700 hover:bg-slate-800 text-slate-300'
-                  }`}
-                >
-                  <div>
-                    <span className="font-black block text-white">⛽ Sharma 24/7 Roadside & Fuel</span>
-                    <span className="text-[10px] text-slate-400">Emergency Fuel & Puncture Runner</span>
-                  </div>
-                  <span className="text-[10px] font-bold text-emerald-400">KYC Approved</span>
-                </button>
-
-                <button
-                  onClick={async () => {
-                    await loginAsVendor('verma.painters@gmail.com');
-                    onClose();
-                  }}
-                  className={`w-full p-2.5 rounded-2xl border text-left text-xs transition-all flex items-center justify-between ${
-                    vendor?.user?.email === 'verma.painters@gmail.com'
-                      ? 'bg-orange-600/20 border-orange-500 font-bold text-orange-300'
-                      : 'bg-slate-800/80 border-slate-700 hover:bg-slate-800 text-slate-300'
-                  }`}
-                >
-                  <div>
-                    <span className="font-black block text-white">🎨 Verma Colorcraft & Painters</span>
-                    <span className="text-[10px] text-slate-400">RFQ Quote Bid Contractor</span>
-                  </div>
-                  <span className="text-[10px] font-bold text-emerald-400">KYC Approved</span>
-                </button>
-
-                <button
-                  onClick={async () => {
-                    await loginAsVendor('patel.kirana@gmail.com');
-                    onClose();
-                  }}
-                  className={`w-full p-2.5 rounded-2xl border text-left text-xs transition-all flex items-center justify-between ${
-                    vendor?.user?.email === 'patel.kirana@gmail.com'
-                      ? 'bg-orange-600/20 border-orange-500 font-bold text-orange-300'
-                      : 'bg-slate-800/80 border-slate-700 hover:bg-slate-800 text-slate-300'
-                  }`}
-                >
-                  <div>
-                    <span className="font-black block text-white">🥛 Patel Kirana & Water Agency</span>
-                    <span className="text-[10px] text-slate-400">Kirana & Daily Subscriptions</span>
-                  </div>
-                  <span className="text-[10px] font-bold text-emerald-400">KYC Approved</span>
-                </button>
+                {[
+                  {
+                    email: 'sharma.rescue@gmail.com',
+                    title: '⛽ Sharma 24/7 Roadside & Fuel',
+                    sub: 'Emergency Fuel & Roadside Breakdown Runner'
+                  },
+                  {
+                    email: 'apollo.pharmacy@gmail.com',
+                    title: '💊 Apollo 24/7 Night Chemist',
+                    sub: 'Emergency Prescription & Medicine Delivery'
+                  },
+                  {
+                    email: 'speed.genie@gmail.com',
+                    title: '📦 SpeedGenie City Courier',
+                    sub: 'Point-to-Point Pickup & Drop Delivery'
+                  },
+                  {
+                    email: 'bangalore.trucks@gmail.com',
+                    title: '🚚 Bengaluru Trucks & Goods Auto',
+                    sub: 'Tata Ace & Ape Goods Transport Fleet'
+                  },
+                  {
+                    email: 'elite.drivers@gmail.com',
+                    title: '🚗 Karnataka Acting Drivers',
+                    sub: 'Hourly / Night / Outstation Car Drivers'
+                  },
+                  {
+                    email: 'verma.painters@gmail.com',
+                    title: '🎨 Verma Colorcraft & Painters',
+                    sub: 'Painting, Carpentry & Bodywork RFQ Bids'
+                  },
+                  {
+                    email: 'patel.kirana@gmail.com',
+                    title: '🥛 Patel Kirana & Water Agency',
+                    sub: 'Kirana Grocery & Daily Subscriptions'
+                  }
+                ].map((p) => (
+                  <button
+                    key={p.email}
+                    onClick={async () => {
+                      await loginAsVendor(p.email);
+                      onClose();
+                    }}
+                    className={`w-full p-2.5 rounded-2xl border text-left text-xs transition-all flex items-center justify-between ${
+                      vendor?.user?.email === p.email
+                        ? 'bg-orange-600/20 border-orange-500 font-bold text-orange-300'
+                        : 'bg-slate-800/80 border-slate-700 hover:bg-slate-800 text-slate-300'
+                    }`}
+                  >
+                    <div>
+                      <span className="font-black block text-white">{p.title}</span>
+                      <span className="text-[10px] text-slate-400">{p.sub}</span>
+                    </div>
+                    <span className="text-[10px] font-bold text-emerald-400">KYC Verified</span>
+                  </button>
+                ))}
               </div>
             </div>
           </div>

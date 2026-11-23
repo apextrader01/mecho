@@ -497,42 +497,29 @@ export default function VendorAuthModal({ isOpen, onClose, defaultTab = 'otp' }:
             <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 block mb-2 text-center">
               Or 1-Click Demo Partner Profiles
             </span>
-            <div className="grid grid-cols-3 gap-2 text-xs">
-              <button
-                type="button"
-                onClick={async () => {
-                  await loginAsVendor('sharma.rescue@gmail.com');
-                  onClose();
-                }}
-                className="p-2 rounded-xl bg-slate-800/80 hover:bg-orange-600/20 border border-slate-700 hover:border-orange-500/50 text-left transition-colors"
-              >
-                <span className="font-black text-white block text-[11px] truncate">⛽ Sharma</span>
-                <span className="text-[10px] text-slate-400 block truncate">Roadside & Fuel</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={async () => {
-                  await loginAsVendor('verma.painters@gmail.com');
-                  onClose();
-                }}
-                className="p-2 rounded-xl bg-slate-800/80 hover:bg-orange-600/20 border border-slate-700 hover:border-orange-500/50 text-left transition-colors"
-              >
-                <span className="font-black text-white block text-[11px] truncate">🎨 Verma</span>
-                <span className="text-[10px] text-slate-400 block truncate">Painter Contractor</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={async () => {
-                  await loginAsVendor('patel.kirana@gmail.com');
-                  onClose();
-                }}
-                className="p-2 rounded-xl bg-slate-800/80 hover:bg-orange-600/20 border border-slate-700 hover:border-orange-500/50 text-left transition-colors"
-              >
-                <span className="font-black text-white block text-[11px] truncate">🥛 Patel</span>
-                <span className="text-[10px] text-slate-400 block truncate">Kirana & Water</span>
-              </button>
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs">
+              {[
+                { email: 'sharma.rescue@gmail.com', icon: '⛽', name: 'Sharma', sub: 'Roadside & Fuel' },
+                { email: 'apollo.pharmacy@gmail.com', icon: '💊', name: 'Apollo', sub: 'Pharmacy Runner' },
+                { email: 'speed.genie@gmail.com', icon: '📦', name: 'SpeedGenie', sub: 'Pickup & Drop' },
+                { email: 'bangalore.trucks@gmail.com', icon: '🚚', name: 'City Fleet', sub: 'Mini-Truck Ace' },
+                { email: 'elite.drivers@gmail.com', icon: '🚗', name: 'Drivers Guild', sub: 'Acting Drivers' },
+                { email: 'verma.painters@gmail.com', icon: '🎨', name: 'Verma', sub: 'Paint & RFQ' },
+                { email: 'patel.kirana@gmail.com', icon: '🥛', name: 'Patel', sub: 'Kirana & Water' }
+              ].map((p) => (
+                <button
+                  key={p.email}
+                  type="button"
+                  onClick={async () => {
+                    await loginAsVendor(p.email);
+                    onClose();
+                  }}
+                  className="p-2 rounded-xl bg-slate-800/80 hover:bg-orange-600/20 border border-slate-700 hover:border-orange-500/50 text-left transition-colors"
+                >
+                  <span className="font-black text-white block text-[11px] truncate">{p.icon} {p.name}</span>
+                  <span className="text-[10px] text-slate-400 block truncate">{p.sub}</span>
+                </button>
+              ))}
             </div>
           </div>
         </div>

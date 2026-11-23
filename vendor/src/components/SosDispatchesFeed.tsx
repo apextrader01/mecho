@@ -7,6 +7,10 @@ import {
   ShieldAlert,
   Fuel,
   Wrench,
+  Pill,
+  PackageCheck,
+  Truck,
+  UserCheck,
   MapPin,
   Clock,
   KeyRound,
@@ -63,7 +67,7 @@ export default function SosDispatchesFeed({ onOpenChat }: SosDispatchesFeedProps
         method: 'PATCH'
       });
       if (res.success) {
-        alert('Dispatch accepted! Proceed to pickup location or fuel pump.');
+        alert('Dispatch accepted! Proceed to pickup location or service point.');
         loadDispatches();
       }
     } catch (err: any) {
@@ -94,7 +98,7 @@ export default function SosDispatchesFeed({ onOpenChat }: SosDispatchesFeedProps
     const amount = receiptAmounts[dispatchId] || '0';
     const file = receiptFiles[dispatchId];
 
-    if (!otp) return alert('Please enter customer Completion OTP');
+    if (!otp) return alert('Please enter customer Completion End OTP');
 
     try {
       const formData = new FormData();
@@ -118,9 +122,136 @@ export default function SosDispatchesFeed({ onOpenChat }: SosDispatchesFeedProps
     }
   };
 
+  const getCategoryMeta = (slug?: string) => {
+    switch (slug) {
+      case 'emergency-fuel':
+        return { icon: Fuel, bg: 'bg-amber-600', badge: 'bg-amber-100 text-amber-900 border-amber-300' };
+      case 'roadside-puncture':
+        return { icon: Wrench, bg: 'bg-red-600', badge: 'bg-red-100 text-red-900 border-red-300' };
+      case 'emergency-pharmacy':
+        return { icon: Pill, bg: 'bg-rose-600', badge: 'bg-rose-100 text-rose-900 border-rose-300' };
+      case 'genie-pickup-drop':
+        return { icon: PackageCheck, bg: 'bg-orange-600', badge: 'bg-orange-100 text-orange-900 border-orange-300' };
+      case 'goods-auto-booking':
+        return { icon: Truck, bg: 'bg-blue-600', badge: 'bg-blue-100 text-blue-900 border-blue-300' };
+      case 'acting-drivers':
+        return { icon: UserCheck, bg: 'bg-indigo-600', badge: 'bg-indigo-100 text-indigo-900 border-indigo-300' };
+      default:
+        return { icon: ShieldAlert, bg: 'bg-slate-700', badge: 'bg-slate-100 text-slate-800 border-slate-300' };
+    }
+  };
+
+  const renderDetails = (d: any) => {
+    const details = typeof d.requestDetails === 'string' ? JSON.parse(d.requestDetails || '{}') : (d.requestDetails || {});
+
+    if (d.category?.slug === 'emergency-fuel') {
+      return (
+        <div className="flex flex-wrap items-center gap-2 text-slate-700 font-bold">
+          <span className="bg-amber-100 text-amber-900 px-2 py-0.5 rounded text-[11px]">
+            ⛽ {details.liters || 3}L {details.fuelType || 'PETROL'}
+          </span>
+          <span className="text-slate-600">🚗 {details.vehicleModel}</span>
+          {details.notes && <p className="w-full text-slate-500 text-[11px] font-normal">📝 {details.notes}</p>}
+        </div>
+      );
+    }
+
+    if (d.category?.slug === 'roadside-puncture') {
+      return (
+        <div className="flex flex-wrap items-center gap-2 text-slate-700 font-bold">
+          <span className="bg-red-100 text-red-900 px-2 py-0.5 rounded text-[11px]">
+            🔧 {details.issue || 'Tyre Puncture'}
+          </span>
+          <span className="text-slate-600">🚗 {details.vehicleType || 'Car'} - {details.vehicleModel}</span>
+        </div>
+      );
+    }
+
+    if (d.category?.slug === 'emergency-pharmacy') {
+      return (
+        <div className="space-y-1 text-slate-700">
+          <div className="flex items-center gap-2">
+            <span className="bg-rose-100 text-rose-900 font-bold px-2 py-0.5 rounded text-[11px]">
+              💊 30-Min Night Chemist
+            </span>
+            {details.prescriptionUploaded && (
+              <span className="bg-emerald-100 text-emerald-900 font-bold px-2 py-0.5 rounded text-[11px]">
+                ✓ Prescription Photo Attached
+              </span>
+            )}
+          </div>
+          <p className="text-xs font-semibold text-slate-800">
+            Medicines: <span className="font-normal">{details.medicines || 'Emergency Medicines'}</span>
+          </p>
+        </div>
+      );
+    }
+
+    if (d.category?.slug === 'genie-pickup-drop') {
+      return (
+        <div className="space-y-1 text-slate-700 text-xs">
+          <p className="font-semibold text-slate-800">
+            📦 Pickup Item: <span className="font-normal">{details.itemDescription || 'Keys / Documents'}</span>
+          </p>
+          {d.dropAddress && (
+            <p className="text-[11px] text-slate-600 font-medium">
+              🏁 Drop Destination: <strong>{d.dropAddress}</strong>
+            </p>
+          )}
+          {details.recipientPhone && (
+            <p className="text-[11px] text-slate-500">
+              📞 Contact: {details.recipientPhone}
+            </p>
+          )}
+        </div>
+      );
+    }
+
+    if (d.category?.slug === 'goods-auto-booking') {
+      return (
+        <div className="space-y-1 text-slate-700 text-xs">
+          <div className="flex items-center gap-2 font-bold">
+            <span className="bg-blue-100 text-blue-900 px-2 py-0.5 rounded text-[11px]">
+              🚚 {details.vehicleType || 'Tata Ace'}
+            </span>
+            <span className="bg-slate-100 text-slate-800 px-2 py-0.5 rounded text-[11px]">
+              👥 {details.helpers || 0} Helpers
+            </span>
+          </div>
+          <p className="font-semibold text-slate-800">
+            📦 Cargo: <span className="font-normal">{details.goodsType || 'Goods Shifting'}</span>
+          </p>
+          {d.dropAddress && (
+            <p className="text-[11px] text-slate-600">🏁 Drop Destination: {d.dropAddress}</p>
+          )}
+        </div>
+      );
+    }
+
+    if (d.category?.slug === 'acting-drivers') {
+      return (
+        <div className="space-y-1 text-slate-700 text-xs">
+          <div className="flex items-center gap-2 font-bold">
+            <span className="bg-indigo-100 text-indigo-900 px-2 py-0.5 rounded text-[11px]">
+              🚗 {details.transmission || 'Manual'} Transmission
+            </span>
+            <span className="bg-slate-100 text-slate-800 px-2 py-0.5 rounded text-[11px]">
+              ⏱️ {details.tripType || 'City Hourly'}
+            </span>
+          </div>
+          {details.carModel && (
+            <p className="font-semibold text-slate-800">Vehicle: <span className="font-normal">{details.carModel}</span></p>
+          )}
+        </div>
+      );
+    }
+
+    return null;
+  };
+
   return (
     <div className="space-y-6">
-      {/* SECTION 1: INCOMING OPEN SOS ALERTS (Broadcasting within radius) */}
+      {/* SECTION 1: INCOMING OPEN SOS ALERTS */}
       <div>
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
@@ -140,65 +271,60 @@ export default function SosDispatchesFeed({ onOpenChat }: SosDispatchesFeedProps
 
         {nearbyDispatches.length === 0 ? (
           <div className="p-8 rounded-3xl bg-slate-50 border border-dashed border-slate-200 text-center text-xs text-slate-400">
-            No pending SOS requests in your area right now. Keep "Online 24/7" toggle ON to receive emergency requests!
+            No pending SOS requests in your area right now. Keep &quot;Online 24/7&quot; toggle ON to receive emergency requests!
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {nearbyDispatches.map((d) => (
-              <div
-                key={d.id}
-                className="bg-white rounded-3xl border-2 border-red-500/30 p-5 shadow-lg shadow-red-500/5 relative overflow-hidden"
-              >
-                <div className="flex items-start justify-between mb-3">
-                  <div className="flex items-center gap-2.5">
-                    <div className="w-10 h-10 rounded-2xl bg-red-600 text-white flex items-center justify-center font-black">
-                      {d.category?.slug === 'emergency-fuel' ? <Fuel className="w-5 h-5" /> : <Wrench className="w-5 h-5" />}
-                    </div>
-                    <div>
-                      <span className="text-[10px] font-bold text-red-600 uppercase tracking-widest bg-red-50 px-2 py-0.5 rounded-full">
-                        {d.bookingNumber}
-                      </span>
-                      <h4 className="font-black text-sm text-slate-900 mt-0.5">
-                        {lang === 'hi' ? d.category?.nameHi || d.category?.name : d.category?.name}
-                      </h4>
-                    </div>
-                  </div>
+            {nearbyDispatches.map((d) => {
+              const meta = getCategoryMeta(d.category?.slug);
+              const IconComp = meta.icon;
 
-                  <span className="text-xs font-black text-slate-900 bg-slate-100 px-2.5 py-1 rounded-xl">
-                    📍 {d.distanceKm} km away
-                  </span>
-                </div>
-
-                <div className="bg-slate-50 rounded-2xl p-3 text-xs space-y-1.5 mb-4">
-                  <p className="font-semibold text-slate-800">
-                    Breakdown Location: {d.pickupAddress}
-                  </p>
-                  {d.requestDetails?.fuelType && (
-                    <div className="flex items-center gap-2 text-slate-600 font-bold">
-                      <span className="bg-amber-100 text-amber-800 px-2 py-0.5 rounded text-[11px]">
-                        Fuel: {d.requestDetails.liters}L {d.requestDetails.fuelType}
-                      </span>
-                      <span>Vehicle: {d.requestDetails.vehicleModel}</span>
-                    </div>
-                  )}
-                  {d.requestDetails?.issue && (
-                    <p className="text-slate-600">Issue: {d.requestDetails.issue} ({d.requestDetails.vehicleType})</p>
-                  )}
-                  <div className="text-[11px] text-slate-500 pt-1 border-t border-slate-200 flex justify-between font-bold">
-                    <span>Assured Runner Service Fee:</span>
-                    <span className="text-emerald-600 font-extrabold">₹{d.runnerServiceFee}</span>
-                  </div>
-                </div>
-
-                <button
-                  onClick={() => handleAccept(d.id)}
-                  className="w-full bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-700 hover:to-rose-700 text-white font-black py-3 rounded-2xl shadow-md text-xs active:scale-95 transition-all flex items-center justify-center gap-2"
+              return (
+                <div
+                  key={d.id}
+                  className="bg-white rounded-3xl border-2 border-red-500/30 p-5 shadow-lg shadow-red-500/5 relative overflow-hidden"
                 >
-                  <Navigation className="w-4 h-4" />
-                  <span>{t.acceptBooking} &rarr;</span>
-                </button>
-              </div>
-            ))}
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="flex items-center gap-2.5">
+                      <div className={`w-10 h-10 rounded-2xl ${meta.bg} text-white flex items-center justify-center font-black`}>
+                        <IconComp className="w-5 h-5" />
+                      </div>
+                      <div>
+                        <span className="text-[10px] font-bold text-red-600 uppercase tracking-widest bg-red-50 px-2 py-0.5 rounded-full">
+                          {d.bookingNumber}
+                        </span>
+                        <h4 className="font-black text-sm text-slate-900 mt-0.5">
+                          {lang === 'hi' ? d.category?.nameHi || d.category?.name : d.category?.name}
+                        </h4>
+                      </div>
+                    </div>
+
+                    <span className="text-xs font-black text-slate-900 bg-slate-100 px-2.5 py-1 rounded-xl">
+                      📍 {d.distanceKm || 'Nearby'} km
+                    </span>
+                  </div>
+
+                  <div className="bg-slate-50 rounded-2xl p-3 text-xs space-y-1.5 mb-4">
+                    <p className="font-semibold text-slate-800">
+                      📍 Pickup: {d.pickupAddress}
+                    </p>
+                    {renderDetails(d)}
+                    <div className="text-[11px] text-slate-500 pt-1.5 border-t border-slate-200 flex justify-between font-bold">
+                      <span>Assured Runner Service Fee:</span>
+                      <span className="text-emerald-600 font-extrabold text-xs">₹{d.runnerServiceFee}</span>
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={() => handleAccept(d.id)}
+                    className="w-full bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-700 hover:to-rose-700 text-white font-black py-3 rounded-2xl shadow-md text-xs active:scale-95 transition-all flex items-center justify-center gap-2"
+                  >
+                    <Navigation className="w-4 h-4" />
+                    <span>{t.acceptBooking} &rarr;</span>
+                  </button>
+                </div>
+              );
+            })}
           </div>
         )}
       </div>
@@ -219,6 +345,8 @@ export default function SosDispatchesFeed({ onOpenChat }: SosDispatchesFeedProps
               const isAccepted = d.status === 'ACCEPTED' || d.status === 'ON_THE_WAY';
               const isInProgress = d.status === 'IN_PROGRESS';
               const isCompleted = d.status === 'COMPLETED';
+              const meta = getCategoryMeta(d.category?.slug);
+              const IconComp = meta.icon;
 
               return (
                 <div
@@ -228,12 +356,15 @@ export default function SosDispatchesFeed({ onOpenChat }: SosDispatchesFeedProps
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-slate-100">
                     <div>
                       <div className="flex items-center gap-2">
+                        <div className={`w-7 h-7 rounded-lg ${meta.bg} text-white flex items-center justify-center`}>
+                          <IconComp className="w-4 h-4" />
+                        </div>
                         <span className="font-black text-sm text-slate-900">
                           {d.category?.name}
                         </span>
                         <span className="text-[10px] font-bold text-slate-400">#{d.bookingNumber}</span>
                       </div>
-                      <p className="text-xs text-slate-500 mt-0.5">
+                      <p className="text-xs text-slate-500 mt-1">
                         Customer: <strong>{d.customer?.name}</strong> ({d.customer?.phone}) • 📍 {d.pickupAddress}
                       </p>
                     </div>
@@ -265,6 +396,11 @@ export default function SosDispatchesFeed({ onOpenChat }: SosDispatchesFeedProps
                     </div>
                   </div>
 
+                  {/* Render Request Specifics */}
+                  <div className="my-3 p-3 bg-slate-50 rounded-2xl">
+                    {renderDetails(d)}
+                  </div>
+
                   {/* Verification & Action Workflows */}
                   <div className="mt-4">
                     {/* Stage 1: Verify Start OTP on Arrival */}
@@ -289,7 +425,7 @@ export default function SosDispatchesFeed({ onOpenChat }: SosDispatchesFeedProps
                           />
                           <button
                             onClick={() => handleVerifyStartOtp(d.id)}
-                            className="bg-amber-600 hover:bg-amber-700 text-white font-extrabold text-xs px-4 py-2.5 rounded-xl shadow-sm"
+                            className="bg-amber-600 hover:bg-amber-700 text-white font-extrabold text-xs px-4 py-2.5 rounded-xl shadow-sm active:scale-95 transition-all"
                           >
                             Verify & Start Service
                           </button>
@@ -308,23 +444,25 @@ export default function SosDispatchesFeed({ onOpenChat }: SosDispatchesFeedProps
                         </div>
 
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                          {d.category?.slug === 'emergency-fuel' && (
-                            <div>
-                              <label className="block text-[11px] font-bold text-slate-700 mb-1">
-                                Actual Fuel Pump Receipt Amount (₹)
-                              </label>
-                              <input
-                                type="number"
-                                step="0.5"
-                                placeholder="e.g. 365.50"
-                                value={receiptAmounts[d.id] || ''}
-                                onChange={(e) =>
-                                  setReceiptAmounts({ ...receiptAmounts, [d.id]: e.target.value })
-                                }
-                                className="w-full text-xs px-3 py-2 rounded-xl border border-slate-200 bg-white"
-                              />
-                            </div>
-                          )}
+                          <div>
+                            <label className="block text-[11px] font-bold text-slate-700 mb-1">
+                              {d.category?.slug === 'emergency-fuel'
+                                ? 'Actual Fuel Pump Receipt Amount (₹)'
+                                : d.category?.slug === 'emergency-pharmacy'
+                                ? 'Actual Chemist Medicine Bill Amount (₹)'
+                                : 'Toll / Extra Material Charges (₹)'}
+                            </label>
+                            <input
+                              type="number"
+                              step="0.5"
+                              placeholder="e.g. 365.50"
+                              value={receiptAmounts[d.id] || ''}
+                              onChange={(e) =>
+                                setReceiptAmounts({ ...receiptAmounts, [d.id]: e.target.value })
+                              }
+                              className="w-full text-xs px-3 py-2 rounded-xl border border-slate-200 bg-white"
+                            />
+                          </div>
 
                           <div>
                             <label className="block text-[11px] font-bold text-slate-700 mb-1">
@@ -346,10 +484,10 @@ export default function SosDispatchesFeed({ onOpenChat }: SosDispatchesFeedProps
                             <label className="block text-[11px] font-bold text-slate-700 mb-1 flex items-center justify-between">
                               <span className="flex items-center gap-1">
                                 <Camera className="w-3.5 h-3.5 text-emerald-600" />
-                                <span>Camera / Receipt Photo</span>
+                                <span>Camera Shutter / Receipt Photo</span>
                               </span>
                               {receiptFiles[d.id] && (
-                                <span className="text-[10px] text-emerald-600 font-bold">✓ Photo Attached</span>
+                                <span className="text-[10px] text-emerald-600 font-bold">✓ Attached</span>
                               )}
                             </label>
                             <input
@@ -383,7 +521,7 @@ export default function SosDispatchesFeed({ onOpenChat }: SosDispatchesFeedProps
                     {isCompleted && (
                       <div className="bg-slate-50 rounded-2xl p-3 text-xs flex justify-between items-center text-slate-600">
                         <span>
-                          Settled Total: <strong>₹{d.totalAmount}</strong> (Runner: ₹{d.runnerServiceFee} + Receipt: ₹{d.actualFuelReceiptAmount})
+                          Settled Total: <strong>₹{d.totalAmount}</strong> (Runner: ₹{d.runnerServiceFee} + Receipt: ₹{d.actualFuelReceiptAmount || 0})
                         </span>
                         <span className="text-emerald-600 font-bold">✓ Payment & Audit Verified</span>
                       </div>

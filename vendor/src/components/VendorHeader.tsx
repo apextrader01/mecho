@@ -27,34 +27,29 @@ export default function VendorHeader({
     <header className="sticky top-0 z-40 bg-slate-900 text-white border-b border-slate-800 shadow-lg">
       {/* Top Banner: Partner Switcher & Multi-Language Selector */}
       <div className="bg-slate-950 px-4 py-1.5 flex flex-wrap justify-between items-center text-xs text-slate-400 border-b border-slate-800 gap-2">
-        <div className="flex items-center gap-2">
-          <span>Switch Partner View:</span>
-          <button
-            onClick={() => loginAsVendor('sharma.rescue@gmail.com')}
-            className={`px-2 py-0.5 rounded font-bold transition-colors ${
-              vendor?.user?.email === 'sharma.rescue@gmail.com' ? 'bg-orange-600 text-white' : 'hover:text-white'
-            }`}
-          >
-            ⛽ Sharma (Roadside & Fuel)
-          </button>
-          <span>•</span>
-          <button
-            onClick={() => loginAsVendor('verma.painters@gmail.com')}
-            className={`px-2 py-0.5 rounded font-bold transition-colors ${
-              vendor?.user?.email === 'verma.painters@gmail.com' ? 'bg-orange-600 text-white' : 'hover:text-white'
-            }`}
-          >
-            🎨 Verma (Paint Contractor)
-          </button>
-          <span>•</span>
-          <button
-            onClick={() => loginAsVendor('patel.kirana@gmail.com')}
-            className={`px-2 py-0.5 rounded font-bold transition-colors ${
-              vendor?.user?.email === 'patel.kirana@gmail.com' ? 'bg-orange-600 text-white' : 'hover:text-white'
-            }`}
-          >
-            🥛 Patel (Kirana & Water)
-          </button>
+        <div className="flex items-center gap-1.5 overflow-x-auto py-0.5 max-w-full">
+          <span className="shrink-0 font-semibold">Switch Partner View:</span>
+          {[
+            { email: 'sharma.rescue@gmail.com', label: '⛽ Sharma (Roadside & Fuel)' },
+            { email: 'apollo.pharmacy@gmail.com', label: '💊 Apollo (Pharmacy Runner)' },
+            { email: 'speed.genie@gmail.com', label: '📦 SpeedGenie (Pickup & Drop)' },
+            { email: 'bangalore.trucks@gmail.com', label: '🚚 Bengaluru Trucks (Tata Ace)' },
+            { email: 'elite.drivers@gmail.com', label: '🚗 Karnataka Drivers (Acting Drivers)' },
+            { email: 'verma.painters@gmail.com', label: '🎨 Verma (Contractor & RFQs)' },
+            { email: 'patel.kirana@gmail.com', label: '🥛 Patel (Kirana & Subscriptions)' }
+          ].map((p, idx) => (
+            <React.Fragment key={p.email}>
+              {idx > 0 && <span>•</span>}
+              <button
+                onClick={() => loginAsVendor(p.email)}
+                className={`px-2 py-0.5 rounded font-bold whitespace-nowrap transition-colors ${
+                  vendor?.user?.email === p.email ? 'bg-orange-600 text-white shadow-sm' : 'hover:text-white text-slate-300'
+                }`}
+              >
+                {p.label}
+              </button>
+            </React.Fragment>
+          ))}
         </div>
 
         {/* Top 7+ Indian Language Selector Dropdown */}
