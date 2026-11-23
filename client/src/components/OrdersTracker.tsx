@@ -230,9 +230,19 @@ export default function OrdersTracker({ onOpenChat }: OrdersTrackerProps) {
                         Verified Bill: Runner Fee ₹{dispatch.runnerServiceFee} + Actual Receipt ₹{dispatch.actualFuelReceiptAmount}
                       </span>
                     </div>
-                    {dispatch.completionPhotoUrl && (
-                      <span className="text-emerald-700 font-bold underline cursor-pointer">
-                        View Attached Pump Receipt / Work Photo &rarr;
+                    {dispatch.completionPhotoUrl ? (
+                      <a
+                        href={dispatch.completionPhotoUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-emerald-700 hover:text-emerald-900 font-bold underline flex items-center gap-1"
+                      >
+                        <span>View Attached Pump Receipt / Work Photo</span>
+                        <span>&rarr;</span>
+                      </a>
+                    ) : (
+                      <span className="text-slate-400 text-[11px] italic">
+                        Digital Audit Recorded
                       </span>
                     )}
                   </div>

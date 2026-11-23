@@ -2,7 +2,19 @@
 
 import React, { useState, useEffect } from 'react';
 import { adminApiRequest } from '../lib/api';
-import { MapPin, Clock, Fuel, Wrench, ShieldAlert, CheckCircle } from 'lucide-react';
+import { MapPin, Clock, Fuel, Wrench, ShieldAlert, CheckCircle, Pill, PackageCheck, Truck, UserCheck } from 'lucide-react';
+
+const getCategoryIcon = (slug?: string) => {
+  switch (slug) {
+    case 'emergency-fuel': return <Fuel className="w-4 h-4 text-amber-600" />;
+    case 'roadside-puncture': return <Wrench className="w-4 h-4 text-red-600" />;
+    case 'emergency-pharmacy': return <Pill className="w-4 h-4 text-rose-600" />;
+    case 'genie-pickup-drop': return <PackageCheck className="w-4 h-4 text-orange-600" />;
+    case 'goods-auto-booking': return <Truck className="w-4 h-4 text-blue-600" />;
+    case 'acting-drivers': return <UserCheck className="w-4 h-4 text-indigo-600" />;
+    default: return <ShieldAlert className="w-4 h-4 text-slate-600" />;
+  }
+};
 
 export default function LiveDispatchesTab() {
   const [liveDispatches, setLiveDispatches] = useState<any[]>([]);
@@ -79,8 +91,8 @@ export default function LiveDispatchesTab() {
             className="bg-white rounded-3xl border border-slate-200 p-4 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs"
           >
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl bg-orange-100 text-orange-600 flex items-center justify-center font-bold">
-                {d.category?.slug === 'emergency-fuel' ? <Fuel className="w-4 h-4" /> : <Wrench className="w-4 h-4" />}
+              <div className="w-9 h-9 rounded-xl bg-slate-100 flex items-center justify-center font-bold">
+                {getCategoryIcon(d.category?.slug)}
               </div>
               <div>
                 <div className="flex items-center gap-2">
