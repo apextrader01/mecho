@@ -37,7 +37,7 @@ export default function VendorHomePage() {
       {/* PWA Partner Mobile App Install & Siren Alerts Banner */}
       <VendorInstallAppBanner />
 
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-6">
+      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-6 pb-28 md:pb-8">
         {activeTab === 'dispatches' && (
           <SosDispatchesFeed onOpenChat={handleOpenChat} />
         )}
@@ -54,6 +54,57 @@ export default function VendorHomePage() {
           <EarningsSummary />
         )}
       </main>
+
+      {/* Real Mobile App Partner Bottom Navigation Bar */}
+      <nav className="fixed bottom-0 left-0 right-0 z-40 bg-slate-900/95 backdrop-blur-lg border-t border-slate-800 px-2 py-1 shadow-2xl flex items-center justify-around safe-bottom">
+        <button
+          onClick={() => setActiveTab('dispatches')}
+          className={`flex flex-col items-center justify-center py-1.5 px-3 rounded-2xl transition-all ${
+            activeTab === 'dispatches' ? 'text-red-400 font-extrabold scale-105' : 'text-slate-400 font-medium hover:text-slate-200'
+          }`}
+        >
+          <span className="text-xl">🚨</span>
+          <span className="text-[10px] tracking-tight">SOS Feed</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab('quotes')}
+          className={`flex flex-col items-center justify-center py-1.5 px-3 rounded-2xl transition-all ${
+            activeTab === 'quotes' ? 'text-sky-400 font-extrabold scale-105' : 'text-slate-400 font-medium hover:text-slate-200'
+          }`}
+        >
+          <span className="text-xl">📋</span>
+          <span className="text-[10px] tracking-tight">RFQs</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab('subscriptions')}
+          className={`flex flex-col items-center justify-center py-1.5 px-3 rounded-2xl transition-all ${
+            activeTab === 'subscriptions' ? 'text-emerald-400 font-extrabold scale-105' : 'text-slate-400 font-medium hover:text-slate-200'
+          }`}
+        >
+          <span className="text-xl">🥛</span>
+          <span className="text-[10px] tracking-tight">Daily</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab('earnings')}
+          className={`flex flex-col items-center justify-center py-1.5 px-3 rounded-2xl transition-all ${
+            activeTab === 'earnings' ? 'text-amber-400 font-extrabold scale-105' : 'text-slate-400 font-medium hover:text-slate-200'
+          }`}
+        >
+          <span className="text-xl">💰</span>
+          <span className="text-[10px] tracking-tight">Earnings</span>
+        </button>
+
+        <button
+          onClick={() => setProfileDrawerOpen(true)}
+          className="flex flex-col items-center justify-center py-1.5 px-3 rounded-2xl transition-all text-slate-400 font-medium hover:text-slate-200"
+        >
+          <span className="text-xl">⚙️</span>
+          <span className="text-[10px] tracking-tight">Shop</span>
+        </button>
+      </nav>
 
       {/* Partner Onboarding / Login Modal */}
       <VendorAuthModal

@@ -14,6 +14,13 @@ export default function VendorInstallAppBanner() {
       setNotifGranted(Notification.permission === 'granted');
     }
 
+    if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
+      navigator.serviceWorker
+        .register('/sw.js')
+        .then((reg) => console.log('ShortEdge Vendor PWA ServiceWorker registered:', reg.scope))
+        .catch((err) => console.log('Vendor ServiceWorker registration error:', err));
+    }
+
     const handler = (e: any) => {
       e.preventDefault();
       setDeferredPrompt(e);

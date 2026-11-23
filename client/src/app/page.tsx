@@ -57,7 +57,7 @@ export default function HomePage() {
       {/* PWA Mobile App Install & Push Notification Banner */}
       <InstallAppBanner />
 
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-6">
+      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-6 pb-28 md:pb-8">
         {/* Top Sticky Quick SOS Section always accessible */}
         <SosSection
           onDispatchCreated={handleDispatchCreated}
@@ -90,26 +90,60 @@ export default function HomePage() {
         )}
       </main>
 
-      {/* Floating Bottom Nav for Mobile */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200 px-4 py-2 flex items-center justify-around shadow-lg">
-        {[
-          { id: 'explore', label: 'Services', icon: '⚡' },
-          { id: 'quotes', label: 'Quotes', icon: '📋' },
-          { id: 'commerce', label: 'Kirana', icon: '🛒' },
-          { id: 'orders', label: 'Bookings', icon: '📦' }
-        ].map((tab) => (
-          <button
-            key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
-            className={`flex flex-col items-center gap-0.5 py-1 px-3 rounded-xl text-[11px] font-bold ${
-              activeTab === tab.id ? 'text-orange-600' : 'text-slate-400'
-            }`}
-          >
-            <span className="text-base">{tab.icon}</span>
-            <span>{tab.label}</span>
-          </button>
-        ))}
-      </div>
+      {/* Real Mobile App Bottom Navigation Bar */}
+      <nav className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-lg border-t border-slate-200/80 px-2 py-1 shadow-2xl flex items-center justify-around safe-bottom">
+        <button
+          onClick={() => setActiveTab('explore')}
+          className={`flex flex-col items-center justify-center py-1.5 px-3 rounded-2xl transition-all ${
+            activeTab === 'explore' ? 'text-orange-600 font-extrabold scale-105' : 'text-slate-500 font-medium hover:text-slate-700'
+          }`}
+        >
+          <span className="text-xl">⚡</span>
+          <span className="text-[10px] tracking-tight">Services</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab('quotes')}
+          className={`flex flex-col items-center justify-center py-1.5 px-3 rounded-2xl transition-all ${
+            activeTab === 'quotes' ? 'text-orange-600 font-extrabold scale-105' : 'text-slate-500 font-medium hover:text-slate-700'
+          }`}
+        >
+          <span className="text-xl">📋</span>
+          <span className="text-[10px] tracking-tight">Quotes</span>
+        </button>
+
+        {/* Raised Center SOS Button (App Core Feature) */}
+        <button
+          onClick={() => setSosModal('fuel')}
+          className="-mt-5 flex flex-col items-center justify-center transition-all group"
+          title="Instant 24/7 Highway Fuel & Roadside SOS"
+        >
+          <div className="w-14 h-14 rounded-full bg-gradient-to-tr from-red-600 via-rose-600 to-orange-500 text-white flex items-center justify-center shadow-lg shadow-red-500/40 ring-4 ring-white group-active:scale-95 transition-transform animate-pulse">
+            <span className="text-2xl">🚨</span>
+          </div>
+          <span className="text-[10px] font-black text-red-600 mt-1 uppercase tracking-wider">
+            SOS 24/7
+          </span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab('orders')}
+          className={`flex flex-col items-center justify-center py-1.5 px-3 rounded-2xl transition-all relative ${
+            activeTab === 'orders' ? 'text-orange-600 font-extrabold scale-105' : 'text-slate-500 font-medium hover:text-slate-700'
+          }`}
+        >
+          <span className="text-xl">📦</span>
+          <span className="text-[10px] tracking-tight">Bookings</span>
+        </button>
+
+        <button
+          onClick={() => setProfileDrawerOpen(true)}
+          className="flex flex-col items-center justify-center py-1.5 px-3 rounded-2xl transition-all text-slate-500 font-medium hover:text-slate-700"
+        >
+          <span className="text-xl">👤</span>
+          <span className="text-[10px] tracking-tight">Account</span>
+        </button>
+      </nav>
 
       {/* Customer Authentication & Login Modal */}
       <AuthModal
