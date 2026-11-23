@@ -2,13 +2,30 @@
 
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { Fuel, Wrench, ShieldAlert, X, MapPin, CheckCircle, AlertTriangle, Clock } from 'lucide-react';
+import {
+  Fuel,
+  Wrench,
+  ShieldAlert,
+  X,
+  MapPin,
+  CheckCircle,
+  AlertTriangle,
+  Clock,
+  Pill,
+  PackageCheck,
+  Truck,
+  UserCheck,
+  Camera,
+  Upload
+} from 'lucide-react';
 import { apiRequest } from '../lib/api';
+
+export type SosModalType = 'fuel' | 'puncture' | 'pharmacy' | 'genie' | 'truck' | 'driver' | null;
 
 interface SosSectionProps {
   onDispatchCreated: (dispatch: any) => void;
-  sosModal: 'fuel' | 'puncture' | null;
-  setSosModal: (modal: 'fuel' | 'puncture' | null) => void;
+  sosModal: SosModalType;
+  setSosModal: (modal: SosModalType) => void;
 }
 
 export default function SosSection({ onDispatchCreated, sosModal, setSosModal }: SosSectionProps) {
@@ -16,21 +33,41 @@ export default function SosSection({ onDispatchCreated, sosModal, setSosModal }:
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Fuel Assist Form State
+  // 1. Fuel Assist State
   const [fuelType, setFuelType] = useState<'PETROL' | 'DIESEL'>('PETROL');
   const [liters, setLiters] = useState<number>(3);
   const [vehicleModel, setVehicleModel] = useState('Honda City (KA 01 MJ 4321)');
   const [notes, setNotes] = useState('Car stalled on service road, hazard lights on');
 
-  // Roadside Assist Form State
+  // 2. Roadside Puncture State
   const [roadsideIssue, setRoadsideIssue] = useState('Tyre Puncture');
   const [vehicleType, setVehicleType] = useState('Car / Sedan');
 
+  // 3. Emergency Pharmacy State
+  const [pharmacyItems, setPharmacyItems] = useState('Paracetamol 650mg, ORS packets, Cough syrup');
+  const [prescriptionPhoto, setPrescriptionPhoto] = useState<string | null>(null);
+
+  // 4. Local Genie State
+  const [genieItem, setGenieItem] = useState('Home keys & Laptop charger');
+  const [genieDropAddress, setGenieDropAddress] = useState('Koramangala 5th Block, Bangalore');
+  const [genieRecipientPhone, setGenieRecipientPhone] = useState('+91 9876543210');
+
+  // 5. Mini-Truck State
+  const [truckType, setTruckType] = useState('Tata Ace / Chota Hathi (750kg)');
+  const [truckDropAddress, setTruckDropAddress] = useState('Whitefield Main Road, Bangalore');
+  const [truckGoodsType, setTruckGoodsType] = useState('Wooden Sofa & 4 Chairs');
+  const [truckHelpers, setTruckHelpers] = useState(1);
+
+  // 6. Acting Driver State
+  const [driverTransmission, setDriverTransmission] = useState<'Manual' | 'Automatic'>('Manual');
+  const [driverTripType, setDriverTripType] = useState('City Hourly (4 Hours - ₹350)');
+  const [driverCarModel, setDriverCarModel] = useState('Maruti Ertiga (KA 05 MN 1234)');
+
+  // Submit Handlers
   const handleFuelSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
-
     try {
       const res = await apiRequest('/dispatch/request', {
         method: 'POST',
@@ -39,21 +76,15 @@ export default function SosSection({ onDispatchCreated, sosModal, setSosModal }:
           pickupLatitude: userCoords.lat,
           pickupLongitude: userCoords.lng,
           pickupAddress: userCoords.address,
-          requestDetails: {
-            fuelType,
-            liters,
-            vehicleModel,
-            notes
-          }
+          requestDetails: { fuelType, liters, vehicleModel, notes }
         })
       });
-
       if (res.success && res.dispatch) {
         onDispatchCreated(res.dispatch);
         setSosModal(null);
       }
     } catch (err: any) {
-      setError(err.message || 'Failed to dispatch runner');
+      setError(err.message || 'Failed to dispatch fuel runner');
     } finally {
       setLoading(false);
     }
@@ -63,7 +94,6 @@ export default function SosSection({ onDispatchCreated, sosModal, setSosModal }:
     e.preventDefault();
     setLoading(true);
     setError(null);
-
     try {
       const res = await apiRequest('/dispatch/request', {
         method: 'POST',
@@ -72,20 +102,136 @@ export default function SosSection({ onDispatchCreated, sosModal, setSosModal }:
           pickupLatitude: userCoords.lat,
           pickupLongitude: userCoords.lng,
           pickupAddress: userCoords.address,
-          requestDetails: {
-            issue: roadsideIssue,
-            vehicleType,
-            vehicleModel
-          }
+          requestDetails: { issue: roadsideIssue, vehicleType, vehicleModel }
         })
       });
-
       if (res.success && res.dispatch) {
         onDispatchCreated(res.dispatch);
         setSosModal(null);
       }
     } catch (err: any) {
       setError(err.message || 'Failed to dispatch mechanic');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handlePharmacySubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await apiRequest('/dispatch/request', {
+        method: 'POST',
+        body: JSON.stringify({
+          categorySlug: 'emergency-pharmacy',
+          pickupLatitude: userCoords.lat,
+          pickupLongitude: userCoords.lng,
+          pickupAddress: userCoords.address,
+          requestDetails: {
+            medicines: pharmacyItems,
+            prescriptionUploaded: !!prescriptionPhoto,
+            urgentDelivery: true
+          }
+        })
+      });
+      if (res.success && res.dispatch) {
+        onDispatchCreated(res.dispatch);
+        setSosModal(null);
+      }
+    } catch (err: any) {
+      setError(err.message || 'Failed to dispatch pharmacy runner');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGenieSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await apiRequest('/dispatch/request', {
+        method: 'POST',
+        body: JSON.stringify({
+          categorySlug: 'genie-pickup-drop',
+          pickupLatitude: userCoords.lat,
+          pickupLongitude: userCoords.lng,
+          pickupAddress: userCoords.address,
+          dropAddress: genieDropAddress,
+          requestDetails: {
+            itemDescription: genieItem,
+            recipientPhone: genieRecipientPhone
+          }
+        })
+      });
+      if (res.success && res.dispatch) {
+        onDispatchCreated(res.dispatch);
+        setSosModal(null);
+      }
+    } catch (err: any) {
+      setError(err.message || 'Failed to dispatch Genie runner');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleTruckSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await apiRequest('/dispatch/request', {
+        method: 'POST',
+        body: JSON.stringify({
+          categorySlug: 'goods-auto-booking',
+          pickupLatitude: userCoords.lat,
+          pickupLongitude: userCoords.lng,
+          pickupAddress: userCoords.address,
+          dropAddress: truckDropAddress,
+          requestDetails: {
+            vehicleType: truckType,
+            goodsType: truckGoodsType,
+            helpers: truckHelpers
+          }
+        })
+      });
+      if (res.success && res.dispatch) {
+        onDispatchCreated(res.dispatch);
+        setSosModal(null);
+      }
+    } catch (err: any) {
+      setError(err.message || 'Failed to dispatch mini-truck');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDriverSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await apiRequest('/dispatch/request', {
+        method: 'POST',
+        body: JSON.stringify({
+          categorySlug: 'acting-drivers',
+          pickupLatitude: userCoords.lat,
+          pickupLongitude: userCoords.lng,
+          pickupAddress: userCoords.address,
+          requestDetails: {
+            transmission: driverTransmission,
+            tripType: driverTripType,
+            carModel: driverCarModel
+          }
+        })
+      });
+      if (res.success && res.dispatch) {
+        onDispatchCreated(res.dispatch);
+        setSosModal(null);
+      }
+    } catch (err: any) {
+      setError(err.message || 'Failed to dispatch acting driver');
     } finally {
       setLoading(false);
     }
@@ -98,76 +244,88 @@ export default function SosSection({ onDispatchCreated, sosModal, setSosModal }:
         <div className="bg-white rounded-[22px] p-4 sm:p-6">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
-              <span className="p-2 rounded-xl bg-red-100 text-red-600">
-                <ShieldAlert className="w-5 h-5 animate-pulse" />
+              <span className="relative flex h-3 w-3">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
               </span>
-              <div>
-                <h2 className="text-base sm:text-lg font-black tracking-tight text-slate-900 uppercase">
-                  {t.emergencyAssist}
-                </h2>
-                <p className="text-xs text-slate-500">
-                  Instant runner & mechanic dispatch with 4-digit OTP security
-                </p>
-              </div>
+              <h2 className="text-base sm:text-lg font-black tracking-tight text-slate-900 uppercase">
+                {t.emergencySectionTitle}
+              </h2>
             </div>
-            <div className="hidden sm:flex items-center gap-1.5 text-xs text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full font-bold">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
-              24/7 Verified Partners Active
-            </div>
+            <span className="text-[11px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-full flex items-center gap-1">
+              <CheckCircle className="w-3.5 h-3.5 text-emerald-600" />
+              <span>24/7 Verified Partners Active</span>
+            </span>
           </div>
 
+          <p className="text-xs text-slate-500 mb-4">
+            {t.sosSubtitle}
+          </p>
+
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-            {/* Action 1: Highway Fuel Assist */}
-            <button
+            {/* SOS Button 1: Fuel Assist */}
+            <div
               onClick={() => setSosModal('fuel')}
-              className="group relative overflow-hidden bg-gradient-to-br from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white p-4 sm:p-5 rounded-2xl shadow-md shadow-orange-500/20 text-left transition-all active:scale-[0.99]"
+              className="group cursor-pointer rounded-2xl p-4 bg-gradient-to-br from-amber-500 to-orange-600 text-white shadow-md hover:shadow-xl transition-all relative overflow-hidden flex flex-col justify-between min-h-[140px]"
             >
               <div className="flex items-start justify-between">
-                <div>
-                  <div className="flex items-center gap-2 mb-1">
-                    <Fuel className="w-6 h-6 text-amber-200" />
-                    <span className="font-extrabold text-base sm:text-lg">{t.fuelAssistBtn}</span>
-                  </div>
-                  <p className="text-xs text-amber-100 font-medium">{t.fuelAssistSub}</p>
+                <div className="p-3 bg-white/20 backdrop-blur-md rounded-xl">
+                  <Fuel className="w-6 h-6 text-white" />
                 </div>
-                <span className="bg-white/20 px-2 py-0.5 rounded text-[11px] font-bold uppercase tracking-wider backdrop-blur-sm">
+                <span className="bg-black/30 text-[10px] uppercase tracking-wider font-extrabold px-2.5 py-0.5 rounded-full text-white">
                   Capped 2-5L
                 </span>
               </div>
-              <div className="mt-3 pt-3 border-t border-white/20 flex items-center justify-between text-xs text-amber-100">
-                <span>⚡ Petrol & Diesel</span>
-                <span className="font-bold underline">Tap to Dispatch &rarr;</span>
+              <div>
+                <h3 className="font-extrabold text-base sm:text-lg leading-tight">
+                  {t.fuelAssistTitle}
+                </h3>
+                <p className="text-xs text-orange-100 mt-1 line-clamp-1">
+                  2-5 Liters Emergency reach-to-pump Runner
+                </p>
               </div>
-            </button>
+              <div className="flex items-center justify-between pt-2 border-t border-white/20 text-xs font-semibold">
+                <span>Petrol & Diesel</span>
+                <span className="underline group-hover:translate-x-1 transition-transform">
+                  Tap to Dispatch →
+                </span>
+              </div>
+            </div>
 
-            {/* Action 2: Roadside Tyre & Puncture */}
-            <button
+            {/* SOS Button 2: Tyre & Puncture */}
+            <div
               onClick={() => setSosModal('puncture')}
-              className="group relative overflow-hidden bg-gradient-to-br from-slate-900 to-slate-800 hover:from-black hover:to-slate-900 text-white p-4 sm:p-5 rounded-2xl shadow-md shadow-slate-900/20 text-left transition-all active:scale-[0.99]"
+              className="group cursor-pointer rounded-2xl p-4 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white shadow-md hover:shadow-xl transition-all relative overflow-hidden flex flex-col justify-between min-h-[140px]"
             >
               <div className="flex items-start justify-between">
-                <div>
-                  <div className="flex items-center gap-2 mb-1">
-                    <Wrench className="w-6 h-6 text-red-400" />
-                    <span className="font-extrabold text-base sm:text-lg">{t.punctureBtn}</span>
-                  </div>
-                  <p className="text-xs text-slate-300 font-medium">{t.punctureSub}</p>
+                <div className="p-3 bg-white/10 backdrop-blur-md rounded-xl">
+                  <Wrench className="w-6 h-6 text-orange-400" />
                 </div>
-                <span className="bg-red-500/30 text-red-300 px-2 py-0.5 rounded text-[11px] font-bold uppercase tracking-wider">
+                <span className="bg-red-500 text-[10px] uppercase tracking-wider font-extrabold px-2.5 py-0.5 rounded-full text-white">
                   24/7 Rapid
                 </span>
               </div>
-              <div className="mt-3 pt-3 border-t border-slate-700 flex items-center justify-between text-xs text-slate-300">
-                <span>Puncture, Jumpstart, Towing</span>
-                <span className="font-bold text-orange-400 underline">Tap to Call &rarr;</span>
+              <div>
+                <h3 className="font-extrabold text-base sm:text-lg leading-tight">
+                  {t.tyreRoadsideTitle}
+                </h3>
+                <p className="text-xs text-slate-300 mt-1 line-clamp-1">
+                  Mechanic Arrival in 15-20 Mins
+                </p>
               </div>
-            </button>
+              <div className="flex items-center justify-between pt-2 border-t border-slate-700 text-xs font-semibold text-slate-300">
+                <span>Puncture, Jumpstart, Towing</span>
+                <span className="underline text-orange-400 group-hover:translate-x-1 transition-transform">
+                  Tap to Call →
+                </span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
       {/* ==================================================================== */}
-      {/* MODAL 1: EMERGENCY FUEL ASSIST (Strict 2-5L Runner Model) */}
+      {/* MODAL 1: EMERGENCY FUEL ASSIST */}
       {/* ==================================================================== */}
       {sosModal === 'fuel' && (
         <div className="fixed inset-0 z-50 bg-slate-900/70 backdrop-blur-sm flex items-center justify-center p-4">
@@ -181,7 +339,7 @@ export default function SosSection({ onDispatchCreated, sosModal, setSosModal }:
                   <h3 className="font-extrabold text-lg text-slate-900">
                     {lang === 'hi' ? 'आपातकालीन पेट्रोल/डीजल डिलीवरी' : 'Emergency Highway Fuel Assist'}
                   </h3>
-                  <p className="text-xs text-slate-500">Reach-to-Pump Emergency Runner Service</p>
+                  <p className="text-xs text-slate-500">Reach-to-Pump Safety Can Delivery</p>
                 </div>
               </div>
               <button
@@ -193,21 +351,19 @@ export default function SosSection({ onDispatchCreated, sosModal, setSosModal }:
             </div>
 
             {error && (
-              <div className="mt-4 p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs flex items-center gap-2">
-                <AlertTriangle className="w-4 h-4 shrink-0" />
-                <span>{error}</span>
+              <div className="mt-4 p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs">
+                {error}
               </div>
             )}
 
             <form onSubmit={handleFuelSubmit} className="mt-4 space-y-4">
-              {/* Strict Notice banner */}
               <div className="p-3 rounded-2xl bg-amber-50 border border-amber-200 text-amber-900 text-xs space-y-1">
                 <div className="font-bold flex items-center gap-1.5 text-amber-800">
                   <Clock className="w-3.5 h-3.5" />
                   <span>Strict Emergency Regulatory Rule:</span>
                 </div>
                 <p>
-                  Fuel delivery is <strong>strictly capped between 2.0 and 5.0 Litres</strong> in PESO-certified safety cans. The partner will upload the official fuel pump receipt photo and verify your Photo ID upon delivery.
+                  Fuel delivery is <strong>strictly capped between 2.0 and 5.0 Litres</strong> in PESO-certified safety cans. The partner will upload the official fuel pump receipt photo and verify your 4-digit start OTP upon arrival.
                 </p>
               </div>
 
@@ -242,7 +398,7 @@ export default function SosSection({ onDispatchCreated, sosModal, setSosModal }:
                 </div>
               </div>
 
-              {/* Liters Selector (Strictly 2 to 5) */}
+              {/* Liters Selector */}
               <div>
                 <div className="flex justify-between items-center mb-1.5">
                   <label className="text-xs font-bold text-slate-700 uppercase">
@@ -284,7 +440,7 @@ export default function SosSection({ onDispatchCreated, sosModal, setSosModal }:
                 />
               </div>
 
-              {/* Live GPS Breakdown Location */}
+              {/* Location */}
               <div>
                 <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
                   {t.dropGpsPin}
@@ -298,21 +454,7 @@ export default function SosSection({ onDispatchCreated, sosModal, setSosModal }:
                 </div>
               </div>
 
-              {/* Additional notes */}
-              <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
-                  Landmark / Notes
-                </label>
-                <input
-                  type="text"
-                  value={notes}
-                  onChange={(e) => setNotes(e.target.value)}
-                  placeholder="e.g. Parked before flyover ramp, hazard lights blinking"
-                  className="w-full text-xs px-3 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-orange-500"
-                />
-              </div>
-
-              {/* Transparent Fee breakdown */}
+              {/* Fee Notice */}
               <div className="p-3 rounded-xl bg-slate-100 text-slate-700 text-xs space-y-1">
                 <div className="flex justify-between font-semibold">
                   <span>Day Runner Service Charge:</span>
@@ -324,11 +466,10 @@ export default function SosSection({ onDispatchCreated, sosModal, setSosModal }:
                 </div>
                 <div className="flex justify-between text-slate-500 text-[11px]">
                   <span>Fuel Cost:</span>
-                  <span>Actual Pump Receipt (Attached upon arrival)</span>
+                  <span>Actual Pump Receipt Attached</span>
                 </div>
               </div>
 
-              {/* Submit */}
               <button
                 type="submit"
                 disabled={loading}
@@ -374,7 +515,6 @@ export default function SosSection({ onDispatchCreated, sosModal, setSosModal }:
             )}
 
             <form onSubmit={handlePunctureSubmit} className="mt-4 space-y-4">
-              {/* Issue Type */}
               <div>
                 <label className="block text-xs font-bold text-slate-700 uppercase mb-1.5">
                   Select Issue
@@ -397,7 +537,6 @@ export default function SosSection({ onDispatchCreated, sosModal, setSosModal }:
                 </div>
               </div>
 
-              {/* Vehicle Type */}
               <div>
                 <label className="block text-xs font-bold text-slate-700 uppercase mb-1.5">
                   Vehicle Type
@@ -420,7 +559,6 @@ export default function SosSection({ onDispatchCreated, sosModal, setSosModal }:
                 </div>
               </div>
 
-              {/* Vehicle Model & Reg No */}
               <div>
                 <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
                   {t.vehicleModel}
@@ -435,7 +573,6 @@ export default function SosSection({ onDispatchCreated, sosModal, setSosModal }:
                 />
               </div>
 
-              {/* Location */}
               <div>
                 <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
                   {t.dropGpsPin}
@@ -449,7 +586,6 @@ export default function SosSection({ onDispatchCreated, sosModal, setSosModal }:
                 </div>
               </div>
 
-              {/* Fee notice */}
               <div className="p-3 rounded-xl bg-slate-100 text-slate-700 text-xs">
                 Base Visit & Inspection Fee: <strong>₹200</strong>. Includes 4-digit start/end verification OTP.
               </div>
@@ -460,6 +596,458 @@ export default function SosSection({ onDispatchCreated, sosModal, setSosModal }:
                 className="w-full bg-slate-900 hover:bg-black text-white font-extrabold py-3 rounded-2xl shadow-lg active:scale-95 transition-all text-sm flex items-center justify-center gap-2"
               >
                 {loading ? 'Locating Nearest Mechanics...' : '🚨 Dispatch Mobile Mechanic Now'}
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ==================================================================== */}
+      {/* MODAL 3: 24/7 EMERGENCY PHARMACY & RUNNER */}
+      {/* ==================================================================== */}
+      {sosModal === 'pharmacy' && (
+        <div className="fixed inset-0 z-50 bg-slate-900/70 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl max-h-[90vh] overflow-y-auto animate-in fade-in zoom-in duration-200">
+            <div className="flex items-center justify-between pb-4 border-b border-slate-100">
+              <div className="flex items-center gap-2.5">
+                <div className="p-2 rounded-xl bg-rose-100 text-rose-600">
+                  <Pill className="w-6 h-6" />
+                </div>
+                <div>
+                  <h3 className="font-extrabold text-lg text-slate-900">
+                    24/7 Emergency Pharmacy & Runner
+                  </h3>
+                  <p className="text-xs text-slate-500">30-Min Delivery from Open Night Chemists</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setSosModal(null)}
+                className="p-1 rounded-lg text-slate-400 hover:text-slate-600"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {error && (
+              <div className="mt-4 p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs">
+                {error}
+              </div>
+            )}
+
+            <form onSubmit={handlePharmacySubmit} className="mt-4 space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
+                  Required Medicines / Emergency Medical Supplies
+                </label>
+                <textarea
+                  required
+                  rows={3}
+                  value={pharmacyItems}
+                  onChange={(e) => setPharmacyItems(e.target.value)}
+                  placeholder="e.g. Paracetamol 650, ORS Sachet, Inhaler, Insulin, Baby Care"
+                  className="w-full text-xs p-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-rose-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
+                  Upload Doctor&apos;s Prescription (Optional / Required for Rx Drugs)
+                </label>
+                <div className="flex items-center gap-2">
+                  <label className="flex-1 cursor-pointer flex items-center justify-center gap-2 py-3 px-4 rounded-xl border-2 border-dashed border-rose-300 hover:border-rose-500 bg-rose-50/50 text-rose-700 text-xs font-bold transition-all">
+                    <Camera className="w-4 h-4" />
+                    <span>{prescriptionPhoto ? 'Prescription Attached ✓' : 'Take Photo / Upload Prescription'}</span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      capture="environment"
+                      className="hidden"
+                      onChange={(e) => {
+                        if (e.target.files?.[0]) {
+                          setPrescriptionPhoto(e.target.files[0].name);
+                        }
+                      }}
+                    />
+                  </label>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
+                  Delivery Destination (GPS Pin)
+                </label>
+                <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 flex items-start gap-2">
+                  <MapPin className="w-4 h-4 text-rose-500 shrink-0 mt-0.5" />
+                  <div className="text-xs">
+                    <p className="font-semibold text-slate-800">{userCoords.address}</p>
+                    <p className="text-slate-400 text-[10px]">Lat: {userCoords.lat}, Lng: {userCoords.lng}</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-900 text-xs space-y-1">
+                <div className="flex justify-between font-bold">
+                  <span>Urgent Pharmacy Runner Fee:</span>
+                  <span>₹80</span>
+                </div>
+                <p className="text-[11px] text-rose-700">
+                  Medicines purchased at actual MRP bill. Bill receipt verified with 4-digit completion OTP.
+                </p>
+              </div>
+
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full bg-gradient-to-r from-rose-600 to-pink-600 hover:from-rose-700 hover:to-pink-700 text-white font-extrabold py-3 rounded-2xl shadow-lg active:scale-95 transition-all text-sm flex items-center justify-center gap-2"
+              >
+                {loading ? 'Assigning Nearest Runner...' : '💊 Dispatch Pharmacy Runner Now'}
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ==================================================================== */}
+      {/* MODAL 4: LOCAL GENIE (PICKUP & DROP) */}
+      {/* ==================================================================== */}
+      {sosModal === 'genie' && (
+        <div className="fixed inset-0 z-50 bg-slate-900/70 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl max-h-[90vh] overflow-y-auto animate-in fade-in zoom-in duration-200">
+            <div className="flex items-center justify-between pb-4 border-b border-slate-100">
+              <div className="flex items-center gap-2.5">
+                <div className="p-2 rounded-xl bg-amber-100 text-amber-600">
+                  <PackageCheck className="w-6 h-6" />
+                </div>
+                <div>
+                  <h3 className="font-extrabold text-lg text-slate-900">
+                    Local Genie (Pickup & Drop)
+                  </h3>
+                  <p className="text-xs text-slate-500">Point-to-Point City Courier for Keys, Documents, Tiffins</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setSosModal(null)}
+                className="p-1 rounded-lg text-slate-400 hover:text-slate-600"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {error && (
+              <div className="mt-4 p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs">
+                {error}
+              </div>
+            )}
+
+            <form onSubmit={handleGenieSubmit} className="mt-4 space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
+                  What should the runner pick up?
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={genieItem}
+                  onChange={(e) => setGenieItem(e.target.value)}
+                  placeholder="e.g. Forgotten house keys, laptop charger, signed paperwork"
+                  className="w-full text-xs px-3 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-amber-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
+                  Pickup Location (Your Current Pin)
+                </label>
+                <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-700 flex items-center gap-2">
+                  <MapPin className="w-4 h-4 text-amber-500 shrink-0" />
+                  <span>{userCoords.address}</span>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
+                  Drop-off Address & Destination
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={genieDropAddress}
+                  onChange={(e) => setGenieDropAddress(e.target.value)}
+                  placeholder="e.g. Flat 302, Green Glen Layout, Bellandur, Bangalore"
+                  className="w-full text-xs px-3 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-amber-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
+                  Recipient Contact Phone
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={genieRecipientPhone}
+                  onChange={(e) => setGenieRecipientPhone(e.target.value)}
+                  placeholder="+91 9876543210"
+                  className="w-full text-xs px-3 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-amber-500"
+                />
+              </div>
+
+              <div className="p-3 rounded-xl bg-slate-100 text-slate-700 text-xs">
+                Base Fee: <strong>₹50</strong> for first 3 km + ₹12/km thereafter. Verified with 4-digit pickup & drop OTPs.
+              </div>
+
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 text-white font-extrabold py-3 rounded-2xl shadow-lg active:scale-95 transition-all text-sm flex items-center justify-center gap-2"
+              >
+                {loading ? 'Finding Nearby Genie Runner...' : '📦 Dispatch Genie Runner Now'}
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ==================================================================== */}
+      {/* MODAL 5: MINI-TRUCK & GOODS AUTO */}
+      {/* ==================================================================== */}
+      {sosModal === 'truck' && (
+        <div className="fixed inset-0 z-50 bg-slate-900/70 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl max-h-[90vh] overflow-y-auto animate-in fade-in zoom-in duration-200">
+            <div className="flex items-center justify-between pb-4 border-b border-slate-100">
+              <div className="flex items-center gap-2.5">
+                <div className="p-2 rounded-xl bg-blue-100 text-blue-600">
+                  <Truck className="w-6 h-6" />
+                </div>
+                <div>
+                  <h3 className="font-extrabold text-lg text-slate-900">
+                    Mini-Truck & Goods Auto
+                  </h3>
+                  <p className="text-xs text-slate-500">Instant Booking for House Shifting, Furniture & Goods</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setSosModal(null)}
+                className="p-1 rounded-lg text-slate-400 hover:text-slate-600"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {error && (
+              <div className="mt-4 p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs">
+                {error}
+              </div>
+            )}
+
+            <form onSubmit={handleTruckSubmit} className="mt-4 space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-slate-700 uppercase mb-1.5">
+                  Choose Vehicle Type
+                </label>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                  {[
+                    { id: 'Piaggio Ape 3W (500kg)', fee: '₹250' },
+                    { id: 'Tata Ace / Chota Hathi (750kg)', fee: '₹450' },
+                    { id: 'Bolero Pickup 8ft (1.2 Ton)', fee: '₹750' }
+                  ].map((v) => (
+                    <button
+                      key={v.id}
+                      type="button"
+                      onClick={() => setTruckType(v.id)}
+                      className={`p-2.5 rounded-xl text-xs font-bold border text-left transition-all ${
+                        truckType === v.id
+                          ? 'bg-blue-600 text-white border-blue-600 shadow-sm'
+                          : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
+                      }`}
+                    >
+                      <div>{v.id}</div>
+                      <div className="text-[10px] opacity-80 mt-0.5">From {v.fee}</div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
+                  Goods / Items Description
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={truckGoodsType}
+                  onChange={(e) => setTruckGoodsType(e.target.value)}
+                  placeholder="e.g. 1 Bed, Refrigerator, 4 cartons"
+                  className="w-full text-xs px-3 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
+                  Drop-off Destination
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={truckDropAddress}
+                  onChange={(e) => setTruckDropAddress(e.target.value)}
+                  placeholder="e.g. ITPL Main Road, Whitefield, Bangalore"
+                  className="w-full text-xs px-3 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 uppercase mb-1.5">
+                  Loading Helpers Needed?
+                </label>
+                <div className="grid grid-cols-3 gap-2">
+                  {[
+                    { count: 0, label: 'Driver Only (₹0)' },
+                    { count: 1, label: '1 Helper (+₹200)' },
+                    { count: 2, label: '2 Helpers (+₹400)' }
+                  ].map((h) => (
+                    <button
+                      key={h.count}
+                      type="button"
+                      onClick={() => setTruckHelpers(h.count)}
+                      className={`py-2 px-2 rounded-xl text-xs font-bold border text-center transition-all ${
+                        truckHelpers === h.count
+                          ? 'bg-slate-900 text-white border-slate-900'
+                          : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
+                      }`}
+                    >
+                      {h.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-extrabold py-3 rounded-2xl shadow-lg active:scale-95 transition-all text-sm flex items-center justify-center gap-2"
+              >
+                {loading ? 'Contacting Fleet Drivers...' : '🚚 Dispatch Mini-Truck Driver'}
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ==================================================================== */}
+      {/* MODAL 6: ACTING DRIVERS ON CALL */}
+      {/* ==================================================================== */}
+      {sosModal === 'driver' && (
+        <div className="fixed inset-0 z-50 bg-slate-900/70 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl max-h-[90vh] overflow-y-auto animate-in fade-in zoom-in duration-200">
+            <div className="flex items-center justify-between pb-4 border-b border-slate-100">
+              <div className="flex items-center gap-2.5">
+                <div className="p-2 rounded-xl bg-indigo-100 text-indigo-600">
+                  <UserCheck className="w-6 h-6" />
+                </div>
+                <div>
+                  <h3 className="font-extrabold text-lg text-slate-900">
+                    Acting Drivers on Call
+                  </h3>
+                  <p className="text-xs text-slate-500">Verified Professional Drivers for Your Own Car</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setSosModal(null)}
+                className="p-1 rounded-lg text-slate-400 hover:text-slate-600"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {error && (
+              <div className="mt-4 p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs">
+                {error}
+              </div>
+            )}
+
+            <form onSubmit={handleDriverSubmit} className="mt-4 space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-slate-700 uppercase mb-1.5">
+                  Car Transmission
+                </label>
+                <div className="grid grid-cols-2 gap-2">
+                  {['Manual', 'Automatic'].map((trans) => (
+                    <button
+                      key={trans}
+                      type="button"
+                      onClick={() => setDriverTransmission(trans as any)}
+                      className={`py-2.5 px-3 rounded-xl font-bold text-xs border text-center transition-all ${
+                        driverTransmission === trans
+                          ? 'bg-indigo-600 text-white border-indigo-600 shadow-sm'
+                          : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
+                      }`}
+                    >
+                      {trans} Transmission
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 uppercase mb-1.5">
+                  Trip Type
+                </label>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                  {[
+                    'City Hourly (4 Hours - ₹350)',
+                    'Night Drop (One-way - ₹250)',
+                    'Outstation Return (₹800/day)'
+                  ].map((trip) => (
+                    <button
+                      key={trip}
+                      type="button"
+                      onClick={() => setDriverTripType(trip)}
+                      className={`p-2 rounded-xl text-xs font-bold border text-left transition-all ${
+                        driverTripType === trip
+                          ? 'bg-slate-900 text-white border-slate-900'
+                          : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
+                      }`}
+                    >
+                      {trip}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
+                  Car Make & Model
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={driverCarModel}
+                  onChange={(e) => setDriverCarModel(e.target.value)}
+                  placeholder="e.g. Hyundai Creta / Honda City"
+                  className="w-full text-xs px-3 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
+                  Pickup Location & Driver Reporting Point
+                </label>
+                <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 flex items-start gap-2">
+                  <MapPin className="w-4 h-4 text-indigo-500 shrink-0 mt-0.5" />
+                  <div className="text-xs">
+                    <p className="font-semibold text-slate-800">{userCoords.address}</p>
+                    <p className="text-slate-400 text-[10px]">Lat: {userCoords.lat}, Lng: {userCoords.lng}</p>
+                  </div>
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-extrabold py-3 rounded-2xl shadow-lg active:scale-95 transition-all text-sm flex items-center justify-center gap-2"
+              >
+                {loading ? 'Finding Available Drivers...' : '🚗 Book Verified Acting Driver'}
               </button>
             </form>
           </div>

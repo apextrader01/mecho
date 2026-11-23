@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import Header from '../components/Header';
-import SosSection from '../components/SosSection';
+import SosSection, { SosModalType } from '../components/SosSection';
 import CategoryGrid from '../components/CategoryGrid';
 import QuotesHub from '../components/QuotesHub';
 import CommerceSection from '../components/CommerceSection';
@@ -14,7 +14,15 @@ import InstallAppBanner from '../components/InstallAppBanner';
 
 export default function HomePage() {
   const [activeTab, setActiveTab] = useState<string>('explore');
-  const [sosModal, setSosModal] = useState<'fuel' | 'puncture' | null>(null);
+  const [sosModal, setSosModal] = useState<SosModalType>(null);
+
+  // Engine B (RFQ) Preselected State
+  const [rfqPreselectedCategory, setRfqPreselectedCategory] = useState<string | null>(null);
+  const [rfqPreselectedTitle, setRfqPreselectedTitle] = useState<string | null>(null);
+
+  // Engine C (Commerce) Sub-Tab State
+  const [commerceInitialSubTab, setCommerceInitialSubTab] = useState<'catalog' | 'subscriptions'>('subscriptions');
+  const [triggerSubModal, setTriggerSubModal] = useState<boolean>(false);
 
   // Customer Account & Profile Modals
   const [authModalOpen, setAuthModalOpen] = useState(false);
@@ -35,12 +43,32 @@ export default function HomePage() {
   };
 
   const handleSelectCategory = (category: any) => {
-    if (category.engineType === 'ENGINE_B_QUOTE') {
-      setActiveTab('quotes');
-    } else if (category.engineType.startsWith('ENGINE_C')) {
-      setActiveTab('commerce');
-    } else {
+    if (category.slug === 'emergency-fuel') {
+      setSosModal('fuel');
+    } else if (category.slug === 'roadside-puncture') {
       setSosModal('puncture');
+    } else if (category.slug === 'emergency-pharmacy') {
+      setSosModal('pharmacy');
+    } else if (category.slug === 'genie-pickup-drop') {
+      setSosModal('genie');
+    } else if (category.slug === 'goods-auto-booking') {
+      setSosModal('truck');
+    } else if (category.slug === 'acting-drivers') {
+      setSosModal('driver');
+    } else if (category.engineType === 'ENGINE_B_QUOTE') {
+      setRfqPreselectedCategory(category.slug);
+      setRfqPreselectedTitle(`${category.name} - Request for Quotations`);
+      setActiveTab('quotes');
+    } else if (category.slug === 'kirana-grocery') {
+      setCommerceInitialSubTab('catalog');
+      setTriggerSubModal(false);
+      setActiveTab('commerce');
+    } else if (category.slug === 'daily-subscriptions') {
+      setCommerceInitialSubTab('subscriptions');
+      setTriggerSubModal(true);
+      setActiveTab('commerce');
+    } else if (category.engineType?.startsWith('ENGINE_C')) {
+      setActiveTab('commerce');
     }
   };
 
@@ -72,17 +100,39 @@ export default function HomePage() {
               onSelectCategory={handleSelectCategory}
               openSosModal={(type) => setSosModal(type)}
             />
-            <QuotesHub onOpenChat={handleOpenChat} />
-            <CommerceSection />
+            <QuotesHub
+              onOpenChat={handleOpenChat}
+              targetCategorySlug={rfqPreselectedCategory}
+              targetCategoryTitle={rfqPreselectedTitle}
+              onClearTargetCategory={() => {
+                setRfqPreselectedCategory(null);
+                setRfqPreselectedTitle(null);
+              }}
+            />
+            <CommerceSection
+              initialSubTab={commerceInitialSubTab}
+              triggerSubModal={triggerSubModal}
+            />
           </>
         )}
 
         {activeTab === 'quotes' && (
-          <QuotesHub onOpenChat={handleOpenChat} />
+          <QuotesHub
+            onOpenChat={handleOpenChat}
+            targetCategorySlug={rfqPreselectedCategory}
+            targetCategoryTitle={rfqPreselectedTitle}
+            onClearTargetCategory={() => {
+              setRfqPreselectedCategory(null);
+              setRfqPreselectedTitle(null);
+            }}
+          />
         )}
 
         {activeTab === 'commerce' && (
-          <CommerceSection />
+          <CommerceSection
+            initialSubTab={commerceInitialSubTab}
+            triggerSubModal={triggerSubModal}
+          />
         )}
 
         {activeTab === 'orders' && (

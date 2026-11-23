@@ -19,9 +19,14 @@ import {
   Play
 } from 'lucide-react';
 
-export default function CommerceSection() {
+interface CommerceSectionProps {
+  initialSubTab?: 'catalog' | 'subscriptions';
+  triggerSubModal?: boolean;
+}
+
+export default function CommerceSection({ initialSubTab, triggerSubModal }: CommerceSectionProps) {
   const { user, t, userCoords, lang } = useAuth();
-  const [activeSubTab, setActiveSubTab] = useState<'catalog' | 'subscriptions'>('subscriptions');
+  const [activeSubTab, setActiveSubTab] = useState<'catalog' | 'subscriptions'>(initialSubTab || 'subscriptions');
   const [products, setProducts] = useState<any[]>([]);
   const [subscriptions, setSubscriptions] = useState<any[]>([]);
   const [cart, setCart] = useState<Record<string, number>>({});
@@ -34,6 +39,15 @@ export default function CommerceSection() {
   const [timeSlot, setTimeSlot] = useState('06:00 AM - 08:00 AM');
   const [quantity, setQuantity] = useState(1);
   const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (initialSubTab) {
+      setActiveSubTab(initialSubTab);
+    }
+    if (triggerSubModal) {
+      setShowSubModal(true);
+    }
+  }, [initialSubTab, triggerSubModal]);
 
   const loadCommerceData = async () => {
     try {

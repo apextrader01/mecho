@@ -19,6 +19,8 @@ import {
   Sparkles
 } from 'lucide-react';
 
+import { SosModalType } from './SosSection';
+
 // Icon Map
 const iconMap: Record<string, any> = {
   Fuel,
@@ -36,7 +38,7 @@ const iconMap: Record<string, any> = {
 
 interface CategoryGridProps {
   onSelectCategory: (category: any) => void;
-  openSosModal: (type: 'fuel' | 'puncture') => void;
+  openSosModal: (type: SosModalType) => void;
 }
 
 export default function CategoryGrid({ onSelectCategory, openSosModal }: CategoryGridProps) {
@@ -139,6 +141,14 @@ export default function CategoryGrid({ onSelectCategory, openSosModal }: Categor
                     openSosModal('fuel');
                   } else if (cat.slug === 'roadside-puncture') {
                     openSosModal('puncture');
+                  } else if (cat.slug === 'emergency-pharmacy') {
+                    openSosModal('pharmacy');
+                  } else if (cat.slug === 'genie-pickup-drop') {
+                    openSosModal('genie');
+                  } else if (cat.slug === 'goods-auto-booking') {
+                    openSosModal('truck');
+                  } else if (cat.slug === 'acting-drivers') {
+                    openSosModal('driver');
                   } else {
                     onSelectCategory(cat);
                   }

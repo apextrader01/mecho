@@ -19,9 +19,17 @@ import {
 
 interface QuotesHubProps {
   onOpenChat: (context: { rfqId: string; receiverId: string; receiverName: string }) => void;
+  targetCategorySlug?: string | null;
+  targetCategoryTitle?: string | null;
+  onClearTargetCategory?: () => void;
 }
 
-export default function QuotesHub({ onOpenChat }: QuotesHubProps) {
+export default function QuotesHub({
+  onOpenChat,
+  targetCategorySlug,
+  targetCategoryTitle,
+  onClearTargetCategory
+}: QuotesHubProps) {
   const { user, t, userCoords } = useAuth();
   const [rfqs, setRfqs] = useState<any[]>([]);
   const [selectedRfq, setSelectedRfq] = useState<any | null>(null);
@@ -34,6 +42,14 @@ export default function QuotesHub({ onOpenChat }: QuotesHubProps) {
   const [description, setDescription] = useState('');
   const [sqft, setSqft] = useState('1200');
   const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (targetCategorySlug) {
+      setCategorySlug(targetCategorySlug);
+      setTitle(targetCategoryTitle || '');
+      setShowCreateModal(true);
+    }
+  }, [targetCategorySlug, targetCategoryTitle]);
 
   const loadRfqs = async () => {
     try {
@@ -90,6 +106,7 @@ export default function QuotesHub({ onOpenChat }: QuotesHubProps) {
 
       if (res.success && res.rfq) {
         setShowCreateModal(false);
+        if (onClearTargetCategory) onClearTargetCategory();
         setTitle('');
         setDescription('');
         await loadRfqs();
@@ -414,7 +431,10 @@ export default function QuotesHub({ onOpenChat }: QuotesHubProps) {
               <div className="flex items-center gap-2 pt-2">
                 <button
                   type="button"
-                  onClick={() => setShowCreateModal(false)}
+                  onClick={() => {
+                    setShowCreateModal(false);
+                    if (onClearTargetCategory) onClearTargetCategory();
+                  }}
                   className="flex-1 py-2.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-600 hover:bg-slate-50"
                 >
                   Cancel
