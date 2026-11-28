@@ -192,6 +192,96 @@ export default function HomePage() {
                 </div>
               </div>
             </div>
+
+            {/* Why ShortEdge / Local Trust & Safety Guarantee Banner */}
+            <div className="bg-white rounded-3xl p-5 sm:p-6 border border-slate-200/90 shadow-sm space-y-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-slate-100">
+                <div>
+                  <h3 className="font-black text-sm sm:text-base text-slate-900 tracking-tight flex items-center gap-1.5">
+                    <ShieldCheck className="w-4 h-4 text-emerald-600" />
+                    <span>Why 15,000+ Bangalore Residents Rely on ShortEdge</span>
+                  </h3>
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    Hyperlocal operations backed by police-verified partners, 4-digit start OTPs, and escrow guarantees.
+                  </p>
+                </div>
+                <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full bg-slate-100 text-slate-700">
+                  Bangalore Hub
+                </span>
+              </div>
+
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+                <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200/70 space-y-1">
+                  <span className="text-lg">⚡</span>
+                  <h4 className="font-extrabold text-slate-900 text-xs">15-Min Rapid SOS</h4>
+                  <p className="text-[11px] text-slate-500 leading-snug">Emergency fuel runners & puncture vans arrive within 15 mins.</p>
+                </div>
+
+                <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200/70 space-y-1">
+                  <span className="text-lg">🛡️</span>
+                  <h4 className="font-extrabold text-slate-900 text-xs">Escrow Shield</h4>
+                  <p className="text-[11px] text-slate-500 leading-snug">10% advance deposit held safely until you inspect completed work.</p>
+                </div>
+
+                <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200/70 space-y-1">
+                  <span className="text-lg">👮</span>
+                  <h4 className="font-extrabold text-slate-900 text-xs">Police Verified</h4>
+                  <p className="text-[11px] text-slate-500 leading-snug">All 24/7 mechanics, drivers, and painters background verified.</p>
+                </div>
+
+                <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200/70 space-y-1">
+                  <span className="text-lg">🔒</span>
+                  <h4 className="font-extrabold text-slate-900 text-xs">OTP Handshake</h4>
+                  <p className="text-[11px] text-slate-500 leading-snug">Zero billing surprises. Service starts only with your 4-digit secret OTP.</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Verified Bangalore Customer Stories Carousel/Grid */}
+            <div className="bg-slate-50/80 rounded-3xl p-5 border border-slate-200 space-y-3">
+              <div className="flex items-center justify-between">
+                <h4 className="font-black text-xs uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
+                  <Sparkles className="w-4 h-4 text-amber-500" />
+                  <span>Real Customer Stories from Indiranagar & Koramangala</span>
+                </h4>
+                <span className="text-xs text-amber-600 font-black">⭐ 4.9/5 Rating</span>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+                <div className="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-2xs space-y-2">
+                  <div className="flex items-center justify-between text-amber-500 font-bold text-xs">
+                    <span>⭐⭐⭐⭐⭐</span>
+                    <span className="text-slate-400 text-[10px]">100ft Road</span>
+                  </div>
+                  <p className="text-slate-600 text-[11px] leading-relaxed italic">
+                    &ldquo;My car stalled near the flyover at 11 PM. Sharma Roadside runner reached in 12 minutes with 3L petrol. Truly a lifesaver!&rdquo;
+                  </p>
+                  <span className="font-bold text-slate-900 block text-[11px]">— Rahul S., Honda City Owner</span>
+                </div>
+
+                <div className="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-2xs space-y-2">
+                  <div className="flex items-center justify-between text-amber-500 font-bold text-xs">
+                    <span>⭐⭐⭐⭐⭐</span>
+                    <span className="text-slate-400 text-[10px]">CMH Road</span>
+                  </div>
+                  <p className="text-slate-600 text-[11px] leading-relaxed italic">
+                    &ldquo;Posted my 3BHK painting requirement and got 2 competitive quotes. Saved ₹5,000 using the escrow rate comparison matrix.&rdquo;
+                  </p>
+                  <span className="font-bold text-slate-900 block text-[11px]">— Priya I., Homeowner</span>
+                </div>
+
+                <div className="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-2xs space-y-2">
+                  <div className="flex items-center justify-between text-amber-500 font-bold text-xs">
+                    <span>⭐⭐⭐⭐⭐</span>
+                    <span className="text-slate-400 text-[10px]">Koramangala</span>
+                  </div>
+                  <p className="text-slate-600 text-[11px] leading-relaxed italic">
+                    &ldquo;Daily 20L Bisleri water can arrives at 6:30 AM before I wake up. Paused it for 4 days during my Goa trip with zero hassle.&rdquo;
+                  </p>
+                  <span className="font-bold text-slate-900 block text-[11px]">— Karthik M., Daily Subscriber</span>
+                </div>
+              </div>
+            </div>
           </div>
         )}
 
