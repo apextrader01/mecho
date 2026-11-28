@@ -197,7 +197,7 @@ export async function getVendorsList(req: AuthenticatedRequest, res: Response) {
 export async function updateKycStatus(req: AuthenticatedRequest, res: Response) {
   try {
     const { vendorId } = req.params;
-    const { status } = req.body; // "APPROVED" | "REJECTED" | "PENDING"
+    const status = req.body.status || req.body.kycStatus; // "APPROVED" | "REJECTED" | "PENDING"
 
     if (!['APPROVED', 'REJECTED', 'PENDING'].includes(status)) {
       return res.status(400).json({ success: false, error: 'Invalid KYC status' });
