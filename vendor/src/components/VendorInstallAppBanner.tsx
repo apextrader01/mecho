@@ -16,7 +16,7 @@ export default function VendorInstallAppBanner() {
 
     if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
       navigator.serviceWorker
-        .register('/sw.js')
+        .register('/vendor/sw.js', { scope: '/vendor/' })
         .then((reg) => console.log('ShortEdge Vendor PWA ServiceWorker registered:', reg.scope))
         .catch((err) => console.log('Vendor ServiceWorker registration error:', err));
     }

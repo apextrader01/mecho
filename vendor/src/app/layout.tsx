@@ -6,10 +6,10 @@ import EcosystemSwitcher from '../components/EcosystemSwitcher';
 export const metadata: Metadata = {
   title: 'ShortEdge Vendor Portal | Local Partners & Highway Runners',
   description: 'Manage 24/7 SOS Dispatches, Itemized Quotations, Daily Subscriptions and Earnings',
-  manifest: '/manifest.json',
+  manifest: '/vendor/manifest.json',
   icons: {
-    icon: '/icon.svg',
-    apple: '/icon.svg'
+    icon: '/vendor/icon.svg',
+    apple: '/vendor/icon.svg'
   },
   appleWebApp: {
     capable: true,
@@ -34,9 +34,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <link rel="manifest" href="/manifest.json" />
-        <link rel="icon" href="/icon.svg" type="image/svg+xml" />
-        <link rel="apple-touch-icon" href="/icon.svg" />
+        <link rel="manifest" href="/vendor/manifest.json" />
+        <link rel="icon" href="/vendor/icon.svg" type="image/svg+xml" />
+        <link rel="apple-touch-icon" href="/vendor/icon.svg" />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
