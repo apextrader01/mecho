@@ -12,7 +12,9 @@ import {
   KeyRound,
   ExternalLink,
   PhoneCall,
-  Sparkles
+  Sparkles,
+  Smartphone,
+  Monitor
 } from 'lucide-react';
 
 interface HeaderProps {
@@ -21,6 +23,8 @@ interface HeaderProps {
   openSosModal: (type: 'fuel' | 'puncture') => void;
   onOpenAuthModal?: () => void;
   onOpenProfileDrawer?: () => void;
+  isMobilePreview?: boolean;
+  onToggleMobilePreview?: () => void;
 }
 
 export default function Header({
@@ -28,7 +32,9 @@ export default function Header({
   setActiveTab,
   openSosModal,
   onOpenAuthModal,
-  onOpenProfileDrawer
+  onOpenProfileDrawer,
+  isMobilePreview,
+  onToggleMobilePreview
 }: HeaderProps) {
   const { user, lang, setLang, t, userCoords, loginAsDemoUser } = useAuth();
   const [langMenuOpen, setLangMenuOpen] = useState(false);
@@ -100,6 +106,22 @@ export default function Header({
 
         {/* Right: Partner Sign-up, Language & User Profile */}
         <div className="flex items-center gap-2">
+          {/* Mobile App Mode Toggle (for Desktop Testing) */}
+          {onToggleMobilePreview && (
+            <button
+              onClick={onToggleMobilePreview}
+              title={isMobilePreview ? "Switch to Full Desktop View" : "Switch to Mobile Phone App View"}
+              className={`hidden md:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all border ${
+                isMobilePreview
+                  ? 'bg-purple-600 text-white border-purple-500 shadow-sm ring-1 ring-purple-400'
+                  : 'bg-slate-100 hover:bg-slate-200 text-slate-700 border-slate-200'
+              }`}
+            >
+              {isMobilePreview ? <Monitor className="w-3.5 h-3.5" /> : <Smartphone className="w-3.5 h-3.5 text-purple-600" />}
+              <span>{isMobilePreview ? 'Full Web' : '📱 Mobile App'}</span>
+            </button>
+          )}
+
           {/* Partner Onboarding Link */}
           <a
             href="/vendor"

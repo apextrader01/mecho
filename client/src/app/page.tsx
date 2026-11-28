@@ -40,6 +40,9 @@ export default function HomePage() {
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [profileDrawerOpen, setProfileDrawerOpen] = useState(false);
 
+  // Desktop Mobile Simulator View Toggle
+  const [isMobilePreview, setIsMobilePreview] = useState(false);
+
   // In-App Chat Modal Context
   const [chatOpen, setChatOpen] = useState(false);
   const [chatContext, setChatContext] = useState<any>(null);
@@ -67,6 +70,10 @@ export default function HomePage() {
       setSosModal('truck');
     } else if (category.slug === 'acting-drivers') {
       setSosModal('driver');
+    } else if (category.slug === 'electrician-services') {
+      setSosModal('electrician');
+    } else if (category.slug === 'plumbing-services') {
+      setSosModal('plumber');
     } else if (category.engineType === 'ENGINE_B_QUOTE') {
       setRfqPreselectedCategory(category.slug);
       setRfqPreselectedTitle(`${category.name} - Request for Quotations`);
@@ -85,19 +92,36 @@ export default function HomePage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50/60 selection:bg-orange-500 selection:text-white">
+    <div className={`min-h-screen flex flex-col selection:bg-orange-500 selection:text-white ${isMobilePreview ? 'bg-slate-200 py-4' : 'bg-slate-50/60'}`}>
       <Header
         activeTab={activeTab}
         setActiveTab={setActiveTab}
-        openSosModal={(type) => setSosModal(type)}
+        openSosModal={(type) => setSosModal(type as any)}
         onOpenAuthModal={() => setAuthModalOpen(true)}
         onOpenProfileDrawer={() => setProfileDrawerOpen(true)}
+        isMobilePreview={isMobilePreview}
+        onToggleMobilePreview={() => setIsMobilePreview(!isMobilePreview)}
       />
 
       {/* PWA Mobile App Install Banner (compact) */}
       <InstallAppBanner />
 
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-5 pb-28 md:pb-8 space-y-6">
+      <div className={isMobilePreview ? "max-w-[420px] w-full mx-auto my-4 bg-slate-50 border-[10px] border-slate-900 rounded-[50px] shadow-2xl overflow-hidden relative ring-4 ring-slate-800/20" : "flex-1 w-full"}>
+        {/* Mobile Mock Notch Header */}
+        {isMobilePreview && (
+          <div className="bg-slate-950 text-white px-6 pt-3 pb-2 flex items-center justify-between text-[11px] font-bold">
+            <span>9:41</span>
+            <div className="w-20 h-4 bg-black rounded-full mx-auto flex items-center justify-center">
+              <span className="w-2 h-2 rounded-full bg-slate-800"></span>
+            </div>
+            <div className="flex items-center gap-1.5 text-[10px]">
+              <span>5G</span>
+              <span>100% 🔋</span>
+            </div>
+          </div>
+        )}
+
+        <main className={`flex-1 w-full mx-auto px-4 sm:px-6 py-5 pb-28 md:pb-8 space-y-6 ${isMobilePreview ? "max-w-md" : "max-w-7xl"}`}>
         {/* Dynamic View Switcher */}
         {activeTab === 'explore' && (
           <div className="space-y-6">
@@ -198,8 +222,8 @@ export default function HomePage() {
         )}
       </main>
 
-      {/* Real Mobile App Bottom Navigation Bar (for small screens) */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-lg border-t border-slate-200/90 px-2 py-1 shadow-2xl flex items-center justify-around safe-bottom">
+      {/* Real Mobile App Bottom Navigation Bar */}
+      <nav className={`${isMobilePreview ? 'flex sticky bottom-0' : 'md:hidden fixed'} bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-lg border-t border-slate-200/90 px-2 py-1 shadow-2xl items-center justify-around safe-bottom`}>
         <button
           onClick={() => setActiveTab('explore')}
           className={`flex flex-col items-center justify-center py-1 px-3 rounded-xl transition-all ${
@@ -248,6 +272,7 @@ export default function HomePage() {
           <span className="text-[10px]">Orders</span>
         </button>
       </nav>
+      </div>
 
       {/* Customer Modals */}
       <ChatModal

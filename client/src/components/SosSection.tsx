@@ -15,12 +15,14 @@ import {
   PackageCheck,
   Truck,
   UserCheck,
+  Zap,
+  Droplets,
   Camera,
   Upload
 } from 'lucide-react';
 import { apiRequest } from '../lib/api';
 
-export type SosModalType = 'fuel' | 'puncture' | 'pharmacy' | 'genie' | 'truck' | 'driver' | null;
+export type SosModalType = 'fuel' | 'puncture' | 'pharmacy' | 'genie' | 'truck' | 'driver' | 'electrician' | 'plumber' | null;
 
 interface SosSectionProps {
   onDispatchCreated: (dispatch: any) => void;
@@ -62,6 +64,14 @@ export default function SosSection({ onDispatchCreated, sosModal, setSosModal }:
   const [driverTransmission, setDriverTransmission] = useState<'Manual' | 'Automatic'>('Manual');
   const [driverTripType, setDriverTripType] = useState('City Hourly (4 Hours - ₹350)');
   const [driverCarModel, setDriverCarModel] = useState('Maruti Ertiga (KA 05 MN 1234)');
+
+  // 7. Electrician State
+  const [electricianIssue, setElectricianIssue] = useState('Short Circuit / MCB Tripping');
+  const [electricianNotes, setElectricianNotes] = useState('Main MCB trips repeatedly');
+
+  // 8. Plumber State
+  const [plumberIssue, setPlumberIssue] = useState('Pipe Burst / Major Leakage');
+  const [plumberNotes, setPlumberNotes] = useState('Water leaking from pipe joint under sink');
 
   // Submit Handlers
   const handleFuelSubmit = async (e: React.FormEvent) => {
@@ -232,6 +242,64 @@ export default function SosSection({ onDispatchCreated, sosModal, setSosModal }:
       }
     } catch (err: any) {
       setError(err.message || 'Failed to dispatch acting driver');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleElectricianSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await apiRequest('/dispatch/request', {
+        method: 'POST',
+        body: JSON.stringify({
+          categorySlug: 'electrician-services',
+          pickupLatitude: userCoords.lat,
+          pickupLongitude: userCoords.lng,
+          pickupAddress: userCoords.address,
+          requestDetails: {
+            issue: electricianIssue,
+            notes: electricianNotes
+          }
+        })
+      });
+      if (res.success && res.dispatch) {
+        onDispatchCreated(res.dispatch);
+        setSosModal(null);
+      }
+    } catch (err: any) {
+      setError(err.message || 'Failed to dispatch electrician');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handlePlumberSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await apiRequest('/dispatch/request', {
+        method: 'POST',
+        body: JSON.stringify({
+          categorySlug: 'plumbing-services',
+          pickupLatitude: userCoords.lat,
+          pickupLongitude: userCoords.lng,
+          pickupAddress: userCoords.address,
+          requestDetails: {
+            issue: plumberIssue,
+            notes: plumberNotes
+          }
+        })
+      });
+      if (res.success && res.dispatch) {
+        onDispatchCreated(res.dispatch);
+        setSosModal(null);
+      }
+    } catch (err: any) {
+      setError(err.message || 'Failed to dispatch emergency plumber');
     } finally {
       setLoading(false);
     }
@@ -1048,6 +1116,197 @@ export default function SosSection({ onDispatchCreated, sosModal, setSosModal }:
                 className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-extrabold py-3 rounded-2xl shadow-lg active:scale-95 transition-all text-sm flex items-center justify-center gap-2"
               >
                 {loading ? 'Finding Available Drivers...' : '🚗 Book Verified Acting Driver'}
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+      {/* 7. Emergency Electrician Modal */}
+      {sosModal === 'electrician' && (
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-slate-100 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-2xl bg-amber-500/10 text-amber-600 flex items-center justify-center">
+                  <Zap className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="font-extrabold text-base text-slate-900">
+                    24/7 Electrician & Power Breakdown
+                  </h3>
+                  <p className="text-xs text-slate-500">20-Min Rapid Arrival • ₹149 Base Inspection</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setSosModal(null)}
+                className="p-1 rounded-lg text-slate-400 hover:text-slate-600"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {error && (
+              <div className="mt-4 p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs">
+                {error}
+              </div>
+            )}
+
+            <form onSubmit={handleElectricianSubmit} className="mt-4 space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-slate-700 uppercase mb-1.5">
+                  Select Electrical Issue
+                </label>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  {[
+                    'Short Circuit / MCB Tripping',
+                    'Switchboard Burning / Sparking',
+                    'Fan / Geyser Wiring Issue',
+                    'Complete House Blackout'
+                  ].map((issue) => (
+                    <button
+                      key={issue}
+                      type="button"
+                      onClick={() => setElectricianIssue(issue)}
+                      className={`p-2.5 rounded-xl text-xs font-bold border text-left transition-all ${
+                        electricianIssue === issue
+                          ? 'bg-amber-600 text-white border-amber-600 shadow-sm'
+                          : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
+                      }`}
+                    >
+                      {issue}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
+                  Describe Problem (Optional)
+                </label>
+                <input
+                  type="text"
+                  value={electricianNotes}
+                  onChange={(e) => setElectricianNotes(e.target.value)}
+                  placeholder="e.g. Sparking sound from main distribution box"
+                  className="w-full text-xs px-3 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-amber-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
+                  Service Address & GPS Location
+                </label>
+                <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 flex items-start gap-2">
+                  <MapPin className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
+                  <div className="text-xs">
+                    <p className="font-semibold text-slate-800">{userCoords.address}</p>
+                    <p className="text-slate-400 text-[10px]">Lat: {userCoords.lat}, Lng: {userCoords.lng}</p>
+                  </div>
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 text-white font-extrabold py-3 rounded-2xl shadow-lg active:scale-95 transition-all text-sm flex items-center justify-center gap-2"
+              >
+                {loading ? 'Broadcasting to Nearest Electricians...' : '⚡ Dispatch 24/7 Electrician (₹149)'}
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* 8. Emergency Plumber Modal */}
+      {sosModal === 'plumber' && (
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-slate-100 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-2xl bg-cyan-500/10 text-cyan-600 flex items-center justify-center">
+                  <Droplets className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="font-extrabold text-base text-slate-900">
+                    Emergency Plumber & Leak Repair
+                  </h3>
+                  <p className="text-xs text-slate-500">25-Min Rapid Arrival • ₹149 Base Inspection</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setSosModal(null)}
+                className="p-1 rounded-lg text-slate-400 hover:text-slate-600"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {error && (
+              <div className="mt-4 p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs">
+                {error}
+              </div>
+            )}
+
+            <form onSubmit={handlePlumberSubmit} className="mt-4 space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-slate-700 uppercase mb-1.5">
+                  Select Plumbing Issue
+                </label>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  {[
+                    'Pipe Burst / Major Leakage',
+                    'Water Pump Motor Not Working',
+                    'Tap Broken / Continuous Gush',
+                    'Bathroom / Kitchen Drain Choked'
+                  ].map((issue) => (
+                    <button
+                      key={issue}
+                      type="button"
+                      onClick={() => setPlumberIssue(issue)}
+                      className={`p-2.5 rounded-xl text-xs font-bold border text-left transition-all ${
+                        plumberIssue === issue
+                          ? 'bg-cyan-600 text-white border-cyan-600 shadow-sm'
+                          : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
+                      }`}
+                    >
+                      {issue}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
+                  Describe Leak / Details (Optional)
+                </label>
+                <input
+                  type="text"
+                  value={plumberNotes}
+                  onChange={(e) => setPlumberNotes(e.target.value)}
+                  placeholder="e.g. Under-sink supply line joint is broken"
+                  className="w-full text-xs px-3 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
+                  Service Address & GPS Location
+                </label>
+                <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 flex items-start gap-2">
+                  <MapPin className="w-4 h-4 text-cyan-500 shrink-0 mt-0.5" />
+                  <div className="text-xs">
+                    <p className="font-semibold text-slate-800">{userCoords.address}</p>
+                    <p className="text-slate-400 text-[10px]">Lat: {userCoords.lat}, Lng: {userCoords.lng}</p>
+                  </div>
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 text-white font-extrabold py-3 rounded-2xl shadow-lg active:scale-95 transition-all text-sm flex items-center justify-center gap-2"
+              >
+                {loading ? 'Broadcasting to Nearest Plumbers...' : '🚰 Dispatch Emergency Plumber (₹149)'}
               </button>
             </form>
           </div>

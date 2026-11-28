@@ -9,6 +9,7 @@ export interface ServiceDefinition {
 }
 
 export const SHORTEDGE_SERVICES: ServiceDefinition[] = [
+  // ENGINE A: Instant Emergency Dispatch (1 - 8)
   {
     id: 'emergency-fuel',
     name: 'Emergency Highway Fuel Delivery',
@@ -64,6 +65,35 @@ export const SHORTEDGE_SERVICES: ServiceDefinition[] = [
     typicalFee: '₹150/hr'
   },
   {
+    id: 'electrician-services',
+    name: '24/7 Electrician & Power Breakdown',
+    emoji: '⚡',
+    badge: '20-Min Arrival',
+    engine: 'instant',
+    description: 'Short circuit emergency, MCB tripping, fan/wiring replacement, switchboard & outage fixing',
+    typicalFee: '₹149 Inspection'
+  },
+  {
+    id: 'plumbing-services',
+    name: 'Emergency Plumber & Leak Repair',
+    emoji: '🚰',
+    badge: '25-Min Arrival',
+    engine: 'instant',
+    description: 'Burst pipe repair, leaking taps, water pump motor fixing, and bathroom drain unblocking',
+    typicalFee: '₹149 Inspection'
+  },
+
+  // ENGINE B: Multi-Vendor Rate Comparison / RFQ (9 - 13)
+  {
+    id: 'ac-appliance-repair',
+    name: 'AC Service, Gas Refill & Appliances',
+    emoji: '❄️',
+    badge: 'Compare Quotes',
+    engine: 'rfq',
+    description: 'Split/Window AC cooling repair, foam jet servicing, gas refill & fridge/washing machine repairs',
+    typicalFee: 'Free Quotes'
+  },
+  {
     id: 'painting-services',
     name: 'House Paint, Textures & Waterproofing',
     emoji: '🎨',
@@ -90,6 +120,17 @@ export const SHORTEDGE_SERVICES: ServiceDefinition[] = [
     description: 'Upload damage photos to get itemized bids from verified local denting, painting and bodywork garages',
     typicalFee: 'Free Quotes'
   },
+  {
+    id: 'cleaning-pest-control',
+    name: 'Deep House Cleaning & Pest Control',
+    emoji: '🧹',
+    badge: 'Compare Quotes',
+    engine: 'rfq',
+    description: 'Bathroom deep disinfection, kitchen degreasing, sofa shampooing & cockroach/termite pest control',
+    typicalFee: 'Free Quotes'
+  },
+
+  // ENGINE C: Hyperlocal Commerce & Subscriptions (14 - 15)
   {
     id: 'kirana-grocery',
     name: 'Local Kirana & Supermarket Delivery',

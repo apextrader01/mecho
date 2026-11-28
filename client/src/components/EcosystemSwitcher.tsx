@@ -13,36 +13,36 @@ export default function EcosystemSwitcher({ current = 'customer' }: { current?: 
       <div className="flex items-center gap-1 sm:gap-2">
         <a
           href="/"
-          className={`px-2.5 py-1 rounded-md transition-all font-medium flex items-center gap-1.5 ${
+          className={`px-2 py-1 rounded-md transition-all font-semibold flex items-center gap-1 text-[11px] sm:text-xs ${
             current === 'customer'
               ? 'bg-orange-600 text-white shadow-sm ring-1 ring-orange-400/50'
               : 'text-slate-400 hover:text-white hover:bg-slate-800'
           }`}
         >
           <span>📱</span>
-          <span>Customer App</span>
+          <span>Customer<span className="hidden sm:inline"> App</span></span>
         </a>
         <a
           href="/vendor"
-          className={`px-2.5 py-1 rounded-md transition-all font-medium flex items-center gap-1.5 ${
+          className={`px-2 py-1 rounded-md transition-all font-semibold flex items-center gap-1 text-[11px] sm:text-xs ${
             current === 'vendor'
               ? 'bg-sky-600 text-white shadow-sm ring-1 ring-sky-400/50'
               : 'text-slate-400 hover:text-white hover:bg-slate-800'
           }`}
         >
           <span>🛵</span>
-          <span>Partner App</span>
+          <span>Partner<span className="hidden sm:inline"> App</span></span>
         </a>
         <a
           href="/admin"
-          className={`px-2.5 py-1 rounded-md transition-all font-medium flex items-center gap-1.5 ${
+          className={`px-2 py-1 rounded-md transition-all font-semibold flex items-center gap-1 text-[11px] sm:text-xs ${
             current === 'admin'
               ? 'bg-violet-600 text-white shadow-sm ring-1 ring-violet-400/50'
               : 'text-slate-400 hover:text-white hover:bg-slate-800'
           }`}
         >
           <span>🎛️</span>
-          <span>Admin Command</span>
+          <span>Admin<span className="hidden sm:inline"> Command</span></span>
         </a>
       </div>
     </div>
