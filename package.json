@@ -30,6 +30,10 @@
     "quotations",
     "subscriptions"
   ],
+  "devDependencies": {
+    "@capacitor/android": "^8.6.2",
+    "@capacitor/core": "^8.6.2"
+  },
   "author": "Senior Full-Stack Architect",
   "license": "MIT"
 }
