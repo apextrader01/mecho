@@ -5,7 +5,7 @@ const config: CapacitorConfig = {
   appName: 'ShortEdge',
   webDir: 'public',
   server: {
-    url: 'https://dramatic-newbie-sky-chances.trycloudflare.com',
+    url: 'https://opposed-moderate-automation-motorola.trycloudflare.com',
     cleartext: true
   }
 };
