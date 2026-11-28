@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  basePath: '/vendor',
   reactStrictMode: false,
   async rewrites() {
     return [

@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import { AuthProvider } from '../context/AuthContext';
+import EcosystemSwitcher from '../components/EcosystemSwitcher';
 
 export const metadata: Metadata = {
   title: 'ShortEdge | Hyperlocal Indian Super-App',
@@ -41,6 +42,7 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
       </head>
       <body className="antialiased selection:bg-orange-500 selection:text-white">
+        <EcosystemSwitcher current="customer" />
         <AuthProvider>{children}</AuthProvider>
       </body>
     </html>

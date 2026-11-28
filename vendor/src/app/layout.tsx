@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import { VendorAuthProvider } from '../context/VendorAuthContext';
+import EcosystemSwitcher from '../components/EcosystemSwitcher';
 
 export const metadata: Metadata = {
   title: 'ShortEdge Vendor Portal | Local Partners & Highway Runners',
@@ -41,6 +42,7 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
       </head>
       <body className="antialiased selection:bg-sky-500 selection:text-white">
+        <EcosystemSwitcher current="vendor" />
         <VendorAuthProvider>{children}</VendorAuthProvider>
       </body>
     </html>

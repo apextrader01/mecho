@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  basePath: '/admin',
   reactStrictMode: false,
   async rewrites() {
     return [
