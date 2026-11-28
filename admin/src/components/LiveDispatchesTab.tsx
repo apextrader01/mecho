@@ -105,8 +105,8 @@ export default function LiveDispatchesTab() {
               </div>
             </div>
 
-            <div className="flex items-center gap-3 self-start sm:self-auto">
-              <div className="text-right">
+            <div className="flex items-center justify-between sm:justify-end gap-3 w-full sm:w-auto pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-100">
+              <div className="text-left sm:text-right">
                 <span className="font-mono font-bold block text-slate-700">
                   OTP: {d.startOtp} / {d.endOtp}
                 </span>
@@ -115,7 +115,7 @@ export default function LiveDispatchesTab() {
                 </span>
               </div>
 
-              <span className="text-[10px] font-black uppercase px-2.5 py-1 rounded-full bg-blue-100 text-blue-800 animate-pulse">
+              <span className="text-[10px] font-black uppercase px-2.5 py-1 rounded-full bg-blue-100 text-blue-800 animate-pulse shrink-0">
                 {d.status}
               </span>
             </div>

@@ -84,21 +84,21 @@ export default function VendorRosterTab() {
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
-          <div className="relative">
+        <div className="flex items-center gap-2 w-full sm:w-auto">
+          <div className="relative flex-1 sm:flex-initial">
             <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
             <input
               type="text"
               placeholder="Search vendor or shop..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-8 pr-3 py-1.5 rounded-xl border border-slate-200 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-sky-500 w-56 sm:w-64"
+              className="pl-8 pr-3 py-2 sm:py-1.5 rounded-xl border border-slate-200 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-sky-500 w-full sm:w-64"
             />
           </div>
 
           <button
             onClick={loadVendors}
-            className="p-2 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50 transition-colors"
+            className="p-2 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50 transition-colors shrink-0"
             title="Refresh Vendors"
           >
             <RefreshCw className="w-4 h-4" />
@@ -106,7 +106,7 @@ export default function VendorRosterTab() {
         </div>
       </div>
 
-      {/* Vendors Table */}
+      {/* Vendors List & Table */}
       <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
         {loading ? (
           <div className="p-8 text-center text-xs text-slate-400 animate-pulse">
@@ -117,103 +117,186 @@ export default function VendorRosterTab() {
             No vendors found matching "{searchTerm}"
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
-              <thead className="bg-slate-50 border-b border-slate-200 text-[10px] font-black uppercase tracking-wider text-slate-500">
-                <tr>
-                  <th className="px-5 py-3.5">Business / Shop</th>
-                  <th className="px-5 py-3.5">Owner Contact</th>
-                  <th className="px-5 py-3.5">Coverage & Pricing</th>
-                  <th className="px-5 py-3.5 text-center">Status</th>
-                  <th className="px-5 py-3.5 text-right">KYC Compliance</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100 font-medium text-slate-700">
-                {filteredVendors.map((v) => (
-                  <tr key={v.id} className="hover:bg-slate-50/70 transition-colors">
-                    <td className="px-5 py-4">
-                      <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-sky-600 to-blue-500 text-white font-black text-sm flex items-center justify-center shadow-sm">
-                          {v.businessName?.charAt(0) || 'V'}
-                        </div>
-                        <div>
-                          <span className="font-extrabold text-slate-900 block text-xs">
-                            {v.businessName}
-                          </span>
-                          <span className="text-[10px] text-slate-500 block truncate max-w-[200px]">
-                            {v.address}
-                          </span>
-                        </div>
+          <>
+            {/* Mobile Card Layout (sm:hidden) */}
+            <div className="sm:hidden divide-y divide-slate-100">
+              {filteredVendors.map((v) => (
+                <div key={v.id} className="p-4 space-y-3">
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-sky-600 to-blue-500 text-white font-black text-sm flex items-center justify-center shadow-sm shrink-0">
+                        {v.businessName?.charAt(0) || 'V'}
                       </div>
-                    </td>
-
-                    <td className="px-5 py-4">
-                      <div className="space-y-0.5">
-                        <span className="font-bold text-slate-900 block text-xs">
-                          {v.user?.name || 'Owner'}
+                      <div>
+                        <span className="font-extrabold text-slate-900 block text-xs">
+                          {v.businessName}
                         </span>
-                        <span className="text-[11px] text-slate-600 flex items-center gap-1">
-                          <Phone className="w-3 h-3 text-sky-600" />
-                          <span>{v.user?.phone}</span>
+                        <span className="text-[10px] text-slate-500 block truncate max-w-[210px]">
+                          {v.address}
                         </span>
                       </div>
-                    </td>
+                    </div>
 
-                    <td className="px-5 py-4">
-                      <div className="space-y-1 text-[11px]">
-                        <span className="text-slate-800 font-semibold block">
-                          📍 Radius: <strong>{v.serviceRadiusKm} km</strong>
-                        </span>
-                        <span className="text-slate-500 block font-mono text-[10px]">
-                          Day: ₹{v.dayRunnerFee} • Night: ₹{v.nightRunnerFee}
-                        </span>
-                      </div>
-                    </td>
+                    <span className={`px-2 py-0.5 rounded-full text-[10px] font-black uppercase shrink-0 ${
+                      v.isOnline
+                        ? 'bg-emerald-100 text-emerald-800'
+                        : 'bg-slate-100 text-slate-600'
+                    }`}>
+                      {v.isOnline ? 'Online' : 'Offline'}
+                    </span>
+                  </div>
 
-                    <td className="px-5 py-4 text-center">
-                      <div className="inline-flex flex-col items-center gap-1">
-                        <span className={`px-2 py-0.5 rounded-full text-[10px] font-black uppercase ${
-                          v.isOnline
-                            ? 'bg-emerald-100 text-emerald-800'
-                            : 'bg-slate-100 text-slate-600'
-                        }`}>
-                          {v.isOnline ? 'Online' : 'Offline'}
-                        </span>
-                        {v.is24x7Emergency && (
-                          <span className="text-[9px] font-black text-red-600 uppercase">
-                            24/7 SOS
-                          </span>
-                        )}
-                      </div>
-                    </td>
+                  <div className="grid grid-cols-2 gap-2 text-[11px] bg-slate-50 p-2.5 rounded-xl border border-slate-100">
+                    <div>
+                      <span className="text-slate-400 block text-[10px]">Owner</span>
+                      <span className="font-bold text-slate-800 truncate block">{v.user?.name || 'Owner'}</span>
+                      {v.user?.phone && (
+                        <a
+                          href={`tel:${v.user.phone}`}
+                          className="text-sky-600 font-bold flex items-center gap-1 text-[11px] mt-0.5 hover:underline"
+                        >
+                          <Phone className="w-3 h-3" />
+                          <span>{v.user.phone}</span>
+                        </a>
+                      )}
+                    </div>
+                    <div>
+                      <span className="text-slate-400 block text-[10px]">Coverage & Pricing</span>
+                      <span className="font-bold text-slate-800 block">Radius: {v.serviceRadiusKm} km</span>
+                      <span className="text-[10px] text-slate-500 font-mono block">Day: ₹{v.dayRunnerFee} • Night: ₹{v.nightRunnerFee}</span>
+                    </div>
+                  </div>
 
-                    <td className="px-5 py-4 text-right">
-                      <div className="inline-flex items-center gap-2">
-                        <span className={`px-2.5 py-1 rounded-full text-[10px] font-black uppercase ${
-                          v.kycStatus === 'APPROVED'
-                            ? 'bg-emerald-100 text-emerald-800'
-                            : v.kycStatus === 'PENDING'
-                            ? 'bg-amber-100 text-amber-800'
-                            : 'bg-red-100 text-red-800'
-                        }`}>
-                          {v.kycStatus}
+                  <div className="flex items-center justify-between pt-1">
+                    <div className="flex items-center gap-2">
+                      <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase ${
+                        v.kycStatus === 'APPROVED'
+                          ? 'bg-emerald-100 text-emerald-800'
+                          : v.kycStatus === 'PENDING'
+                          ? 'bg-amber-100 text-amber-800'
+                          : 'bg-red-100 text-red-800'
+                      }`}>
+                        KYC: {v.kycStatus}
+                      </span>
+                      {v.is24x7Emergency && (
+                        <span className="text-[9px] font-black text-red-600 uppercase bg-red-50 border border-red-200 px-1.5 py-0.5 rounded">
+                          24/7 SOS
                         </span>
+                      )}
+                    </div>
 
-                        {v.kycStatus !== 'APPROVED' && (
-                          <button
-                            onClick={() => handleUpdateKyc(v.id, 'APPROVED')}
-                            className="px-2 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[10px] transition-colors"
-                          >
-                            Approve
-                          </button>
-                        )}
-                      </div>
-                    </td>
+                    {v.kycStatus !== 'APPROVED' && (
+                      <button
+                        onClick={() => handleUpdateKyc(v.id, 'APPROVED')}
+                        className="px-3 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[10px] transition-colors"
+                      >
+                        Approve Partner
+                      </button>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Desktop Table (hidden sm:block) */}
+            <div className="hidden sm:block overflow-x-auto">
+              <table className="w-full text-left text-xs">
+                <thead className="bg-slate-50 border-b border-slate-200 text-[10px] font-black uppercase tracking-wider text-slate-500">
+                  <tr>
+                    <th className="px-5 py-3.5">Business / Shop</th>
+                    <th className="px-5 py-3.5">Owner Contact</th>
+                    <th className="px-5 py-3.5">Coverage & Pricing</th>
+                    <th className="px-5 py-3.5 text-center">Status</th>
+                    <th className="px-5 py-3.5 text-right">KYC Compliance</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody className="divide-y divide-slate-100 font-medium text-slate-700">
+                  {filteredVendors.map((v) => (
+                    <tr key={v.id} className="hover:bg-slate-50/70 transition-colors">
+                      <td className="px-5 py-4">
+                        <div className="flex items-center gap-3">
+                          <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-sky-600 to-blue-500 text-white font-black text-sm flex items-center justify-center shadow-sm">
+                            {v.businessName?.charAt(0) || 'V'}
+                          </div>
+                          <div>
+                            <span className="font-extrabold text-slate-900 block text-xs">
+                              {v.businessName}
+                            </span>
+                            <span className="text-[10px] text-slate-500 block truncate max-w-[200px]">
+                              {v.address}
+                            </span>
+                          </div>
+                        </div>
+                      </td>
+
+                      <td className="px-5 py-4">
+                        <div className="space-y-0.5">
+                          <span className="font-bold text-slate-900 block text-xs">
+                            {v.user?.name || 'Owner'}
+                          </span>
+                          <span className="text-[11px] text-slate-600 flex items-center gap-1">
+                            <Phone className="w-3 h-3 text-sky-600" />
+                            <span>{v.user?.phone}</span>
+                          </span>
+                        </div>
+                      </td>
+
+                      <td className="px-5 py-4">
+                        <div className="space-y-1 text-[11px]">
+                          <span className="text-slate-800 font-semibold block">
+                            📍 Radius: <strong>{v.serviceRadiusKm} km</strong>
+                          </span>
+                          <span className="text-slate-500 block font-mono text-[10px]">
+                            Day: ₹{v.dayRunnerFee} • Night: ₹{v.nightRunnerFee}
+                          </span>
+                        </div>
+                      </td>
+
+                      <td className="px-5 py-4 text-center">
+                        <div className="inline-flex flex-col items-center gap-1">
+                          <span className={`px-2 py-0.5 rounded-full text-[10px] font-black uppercase ${
+                            v.isOnline
+                              ? 'bg-emerald-100 text-emerald-800'
+                              : 'bg-slate-100 text-slate-600'
+                          }`}>
+                            {v.isOnline ? 'Online' : 'Offline'}
+                          </span>
+                          {v.is24x7Emergency && (
+                            <span className="text-[9px] font-black text-red-600 uppercase">
+                              24/7 SOS
+                            </span>
+                          )}
+                        </div>
+                      </td>
+
+                      <td className="px-5 py-4 text-right">
+                        <div className="inline-flex items-center gap-2">
+                          <span className={`px-2.5 py-1 rounded-full text-[10px] font-black uppercase ${
+                            v.kycStatus === 'APPROVED'
+                              ? 'bg-emerald-100 text-emerald-800'
+                              : v.kycStatus === 'PENDING'
+                              ? 'bg-amber-100 text-amber-800'
+                              : 'bg-red-100 text-red-800'
+                          }`}>
+                            {v.kycStatus}
+                          </span>
+
+                          {v.kycStatus !== 'APPROVED' && (
+                            <button
+                              onClick={() => handleUpdateKyc(v.id, 'APPROVED')}
+                              className="px-2 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[10px] transition-colors"
+                            >
+                              Approve
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
         )}
       </div>
     </div>

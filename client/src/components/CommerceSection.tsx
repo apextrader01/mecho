@@ -180,6 +180,8 @@ export default function CommerceSection({ initialSubTab, triggerSubModal }: Comm
     return sum + (p ? p.price * qty : 0);
   }, 0);
 
+  const totalItemsCount = Object.values(cart).reduce((a, b) => a + b, 0);
+
   return (
     <div className="mb-10">
       {/* Banner */}
@@ -416,7 +418,7 @@ export default function CommerceSection({ initialSubTab, triggerSubModal }: Comm
           </div>
 
           {/* Cart Sidebar */}
-          <div className="lg:col-span-1 bg-white rounded-3xl border border-slate-200 p-5 shadow-sm h-fit">
+          <div id="checkout-cart-panel" className="lg:col-span-1 bg-white rounded-3xl border border-slate-200 p-5 shadow-sm h-fit">
             <h3 className="font-black text-sm text-slate-900 mb-3 flex items-center justify-between">
               <span>Checkout Cart</span>
               <span className="text-xs bg-orange-100 text-orange-700 px-2 py-0.5 rounded-full font-bold">
@@ -472,6 +474,39 @@ export default function CommerceSection({ initialSubTab, triggerSubModal }: Comm
               </div>
             )}
           </div>
+        </div>
+      )}
+
+      {/* Floating Sticky Mobile Cart Bar */}
+      {activeSubTab === 'catalog' && totalItemsCount > 0 && (
+        <div className="lg:hidden fixed bottom-20 left-3 right-3 z-30 bg-slate-950/95 backdrop-blur-md text-white p-3.5 rounded-2xl shadow-2xl border border-slate-800 flex items-center justify-between animate-in slide-in-from-bottom duration-200">
+          <div className="flex items-center gap-2.5">
+            <div className="w-10 h-10 rounded-xl bg-orange-500/20 text-orange-400 flex items-center justify-center font-black shrink-0">
+              <ShoppingBag className="w-5 h-5" />
+            </div>
+            <div>
+              <div className="flex items-center gap-1.5 text-xs font-black">
+                <span className="bg-orange-500 text-white px-2 py-0.5 rounded-full text-[10px]">
+                  {totalItemsCount} {totalItemsCount === 1 ? 'item' : 'items'}
+                </span>
+                <span className="text-white font-black">₹{cartTotal + (cartTotal > 500 ? 0 : 30)}</span>
+              </div>
+              <p className="text-[10px] text-slate-400">
+                {cartTotal > 500 ? 'Free Hyperlocal Delivery' : '+ ₹30 delivery fee'}
+              </p>
+            </div>
+          </div>
+
+          <button
+            onClick={() => {
+              const el = document.getElementById('checkout-cart-panel');
+              if (el) el.scrollIntoView({ behavior: 'smooth' });
+            }}
+            className="bg-orange-500 hover:bg-orange-600 active:scale-95 text-white font-black text-xs px-4 py-2.5 rounded-xl shadow-lg shadow-orange-500/30 flex items-center gap-1.5 transition-all"
+          >
+            <span>View Cart</span>
+            <ArrowRight className="w-3.5 h-3.5" />
+          </button>
         </div>
       )}
 

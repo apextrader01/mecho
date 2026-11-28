@@ -87,12 +87,12 @@ export default function KycVerificationTab() {
         </div>
 
         {/* Filter Pills */}
-        <div className="flex items-center gap-1.5 text-xs font-bold">
+        <div className="flex items-center gap-1.5 text-xs font-bold overflow-x-auto pb-1 no-scrollbar w-full sm:w-auto">
           {['ALL', 'PENDING', 'APPROVED', 'REJECTED'].map((st) => (
             <button
               key={st}
               onClick={() => setFilter(st)}
-              className={`px-3 py-1.5 rounded-xl transition-all ${
+              className={`px-3 py-1.5 rounded-xl whitespace-nowrap shrink-0 transition-all ${
                 filter === st
                   ? 'bg-slate-900 text-white shadow-sm'
                   : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
@@ -155,10 +155,15 @@ export default function KycVerificationTab() {
                     <p>
                       Owner: <strong className="text-slate-800">{v.user?.name}</strong>
                     </p>
-                    <p className="flex items-center gap-1">
-                      <Phone className="w-3.5 h-3.5 text-slate-400" />
-                      <span>{v.user?.phone}</span>
-                    </p>
+                    {v.user?.phone && (
+                      <a
+                        href={`tel:${v.user.phone}`}
+                        className="flex items-center gap-1 text-sky-600 font-bold hover:underline"
+                      >
+                        <Phone className="w-3.5 h-3.5" />
+                        <span>{v.user.phone}</span>
+                      </a>
+                    )}
                     {v.user?.email && (
                       <p className="text-slate-500 font-mono text-[11px]">
                         {v.user.email}
@@ -193,11 +198,11 @@ export default function KycVerificationTab() {
                 </div>
 
                 {/* Action Buttons */}
-                <div className="flex items-center gap-2 self-start md:self-center shrink-0">
+                <div className="w-full md:w-auto flex items-center justify-between md:justify-end gap-2 pt-3 md:pt-0 border-t md:border-t-0 border-slate-100 shrink-0">
                   {v.kycStatus !== 'APPROVED' ? (
                     <button
                       onClick={() => handleUpdateKyc(v.id, 'APPROVED')}
-                      className="py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-black shadow-md shadow-emerald-600/20 active:scale-95 transition-all flex items-center gap-1.5"
+                      className="flex-1 md:flex-initial py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-black shadow-md shadow-emerald-600/20 active:scale-95 transition-all flex items-center justify-center gap-1.5"
                     >
                       <CheckCircle2 className="w-4 h-4" />
                       <span>Approve Partner</span>

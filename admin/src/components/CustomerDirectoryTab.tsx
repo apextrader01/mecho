@@ -101,88 +101,150 @@ export default function CustomerDirectoryTab() {
             No customers found matching "{searchTerm}"
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
-              <thead className="bg-slate-50 border-b border-slate-200 text-[10px] font-black uppercase tracking-wider text-slate-500">
-                <tr>
-                  <th className="px-5 py-3.5">Customer Name</th>
-                  <th className="px-5 py-3.5">Contact Details</th>
-                  <th className="px-5 py-3.5 text-center">Language</th>
-                  <th className="px-5 py-3.5 text-center">Activity Across Engines</th>
-                  <th className="px-5 py-3.5 text-right">Joined Date</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100 font-medium text-slate-700">
-                {filteredCustomers.map((cust) => (
-                  <tr key={cust.id} className="hover:bg-slate-50/70 transition-colors">
-                    <td className="px-5 py-4">
-                      <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-violet-600 to-indigo-500 text-white font-black text-sm flex items-center justify-center shadow-sm">
-                          {cust.name?.charAt(0) || 'U'}
-                        </div>
-                        <div>
-                          <span className="font-extrabold text-slate-900 block text-xs">
-                            {cust.name}
-                          </span>
-                          <span className="text-[10px] text-slate-400 font-mono">
-                            ID: {cust.id.slice(0, 8)}...
-                          </span>
-                        </div>
+          <>
+            {/* Mobile Card List (Hidden on Tablet/Desktop) */}
+            <div className="sm:hidden divide-y divide-slate-100">
+              {filteredCustomers.map((cust) => (
+                <div key={cust.id} className="p-4 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-violet-600 to-indigo-500 text-white font-black text-sm flex items-center justify-center shadow-xs">
+                        {cust.name?.charAt(0) || 'U'}
                       </div>
-                    </td>
-
-                    <td className="px-5 py-4">
-                      <div className="space-y-0.5">
-                        <span className="font-bold text-slate-800 flex items-center gap-1.5">
-                          <Phone className="w-3 h-3 text-violet-600" />
-                          <span>{cust.phone}</span>
+                      <div>
+                        <span className="font-extrabold text-slate-900 block text-xs">
+                          {cust.name}
                         </span>
-                        {cust.email && (
-                          <span className="text-[11px] text-slate-500 flex items-center gap-1.5">
-                            <Mail className="w-3 h-3 text-slate-400" />
-                            <span>{cust.email}</span>
-                          </span>
-                        )}
-                      </div>
-                    </td>
-
-                    <td className="px-5 py-4 text-center">
-                      <span className="uppercase text-[10px] font-black px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 border border-slate-200">
-                        {cust.preferredLang || 'en'}
-                      </span>
-                    </td>
-
-                    <td className="px-5 py-4">
-                      <div className="flex items-center justify-center gap-2">
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-red-50 text-red-700 text-[11px] font-bold" title="SOS Dispatches">
-                          <Fuel className="w-3 h-3 text-red-500" />
-                          <span>{cust._count?.dispatches || 0}</span>
-                        </span>
-
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-blue-50 text-blue-700 text-[11px] font-bold" title="RFQ Quotations">
-                          <FileText className="w-3 h-3 text-blue-500" />
-                          <span>{cust._count?.rfqs || 0}</span>
-                        </span>
-
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 text-[11px] font-bold" title="Subscriptions">
-                          <ShoppingBag className="w-3 h-3 text-emerald-500" />
-                          <span>{cust._count?.subscriptions || 0}</span>
+                        <span className="text-[10px] text-slate-400 font-mono">
+                          ID: {cust.id.slice(0, 8)}...
                         </span>
                       </div>
-                    </td>
+                    </div>
 
-                    <td className="px-5 py-4 text-right text-slate-500 text-[11px]">
-                      {new Date(cust.createdAt).toLocaleDateString('en-IN', {
-                        day: 'numeric',
-                        month: 'short',
-                        year: 'numeric'
-                      })}
-                    </td>
+                    <span className="uppercase text-[9px] font-black px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 border border-slate-200">
+                      {cust.preferredLang || 'en'}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center justify-between text-xs pt-1">
+                    <a
+                      href={`tel:${cust.phone}`}
+                      className="font-bold text-violet-700 hover:underline flex items-center gap-1 bg-violet-50 px-2.5 py-1 rounded-lg border border-violet-200/60"
+                    >
+                      <Phone className="w-3 h-3 text-violet-600" />
+                      <span>{cust.phone}</span>
+                    </a>
+
+                    <span className="text-[10px] text-slate-400">
+                      Joined {new Date(cust.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}
+                    </span>
+                  </div>
+
+                  {/* Engine Activity Pills */}
+                  <div className="flex items-center gap-1.5 pt-1 text-[10px] font-bold">
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-red-50 text-red-700 border border-red-200/50">
+                      <Fuel className="w-3 h-3 text-red-500" />
+                      <span>{cust._count?.dispatches || 0} SOS</span>
+                    </span>
+
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-blue-50 text-blue-700 border border-blue-200/50">
+                      <FileText className="w-3 h-3 text-blue-500" />
+                      <span>{cust._count?.rfqs || 0} RFQ</span>
+                    </span>
+
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200/50">
+                      <ShoppingBag className="w-3 h-3 text-emerald-500" />
+                      <span>{cust._count?.subscriptions || 0} Subs</span>
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Desktop Table (Hidden on Mobile) */}
+            <div className="hidden sm:block overflow-x-auto">
+              <table className="w-full text-left text-xs">
+                <thead className="bg-slate-50 border-b border-slate-200 text-[10px] font-black uppercase tracking-wider text-slate-500">
+                  <tr>
+                    <th className="px-5 py-3.5">Customer Name</th>
+                    <th className="px-5 py-3.5">Contact Details</th>
+                    <th className="px-5 py-3.5 text-center">Language</th>
+                    <th className="px-5 py-3.5 text-center">Activity Across Engines</th>
+                    <th className="px-5 py-3.5 text-right">Joined Date</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody className="divide-y divide-slate-100 font-medium text-slate-700">
+                  {filteredCustomers.map((cust) => (
+                    <tr key={cust.id} className="hover:bg-slate-50/70 transition-colors">
+                      <td className="px-5 py-4">
+                        <div className="flex items-center gap-3">
+                          <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-violet-600 to-indigo-500 text-white font-black text-sm flex items-center justify-center shadow-sm">
+                            {cust.name?.charAt(0) || 'U'}
+                          </div>
+                          <div>
+                            <span className="font-extrabold text-slate-900 block text-xs">
+                              {cust.name}
+                            </span>
+                            <span className="text-[10px] text-slate-400 font-mono">
+                              ID: {cust.id.slice(0, 8)}...
+                            </span>
+                          </div>
+                        </div>
+                      </td>
+
+                      <td className="px-5 py-4">
+                        <div className="space-y-0.5">
+                          <span className="font-bold text-slate-800 flex items-center gap-1.5">
+                            <Phone className="w-3 h-3 text-violet-600" />
+                            <span>{cust.phone}</span>
+                          </span>
+                          {cust.email && (
+                            <span className="text-[11px] text-slate-500 flex items-center gap-1.5">
+                              <Mail className="w-3 h-3 text-slate-400" />
+                              <span>{cust.email}</span>
+                            </span>
+                          )}
+                        </div>
+                      </td>
+
+                      <td className="px-5 py-4 text-center">
+                        <span className="uppercase text-[10px] font-black px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 border border-slate-200">
+                          {cust.preferredLang || 'en'}
+                        </span>
+                      </td>
+
+                      <td className="px-5 py-4">
+                        <div className="flex items-center justify-center gap-2">
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-red-50 text-red-700 text-[11px] font-bold" title="SOS Dispatches">
+                            <Fuel className="w-3 h-3 text-red-500" />
+                            <span>{cust._count?.dispatches || 0}</span>
+                          </span>
+
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-blue-50 text-blue-700 text-[11px] font-bold" title="RFQ Quotations">
+                            <FileText className="w-3 h-3 text-blue-500" />
+                            <span>{cust._count?.rfqs || 0}</span>
+                          </span>
+
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 text-[11px] font-bold" title="Subscriptions">
+                            <ShoppingBag className="w-3 h-3 text-emerald-500" />
+                            <span>{cust._count?.subscriptions || 0}</span>
+                          </span>
+                        </div>
+                      </td>
+
+                      <td className="px-5 py-4 text-right text-slate-500 text-[11px]">
+                        {new Date(cust.createdAt).toLocaleDateString('en-IN', {
+                          day: 'numeric',
+                          month: 'short',
+                          year: 'numeric'
+                        })}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
         )}
       </div>
     </div>
