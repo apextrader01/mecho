@@ -7,7 +7,6 @@ buildscript {
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:8.4.2'
-        classpath 'com.google.gms:google-services:4.4.2'
     }
 }
 
@@ -18,8 +17,13 @@ allprojects {
         google()
         mavenCentral()
     }
+    ext {
+        compileSdkVersion = 34
+        targetSdkVersion = 34
+        minSdkVersion = 24
+    }
 }
 
 task clean(type: Delete) {
-    delete rootProject.buildDir
+    delete rootProject.layout.buildDirectory
 }
