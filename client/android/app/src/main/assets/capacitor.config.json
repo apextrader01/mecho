@@ -1,0 +1,9 @@
+{
+	"appId": "in.shortedge.app",
+	"appName": "ShortEdge",
+	"webDir": "public",
+	"server": {
+		"url": "https://dramatic-newbie-sky-chances.trycloudflare.com",
+		"cleartext": true
+	}
+}
