@@ -1,7 +1,6 @@
-// ShortEdge Progressive Web App (PWA) Service Worker
-const CACHE_NAME = 'shortedge-cache-v1';
+// ShortEdge Progressive Web App (PWA) Service Worker - v4 (Network First for Instant OTA)
+const CACHE_NAME = 'shortedge-cache-v4';
 const ASSETS_TO_CACHE = [
-  '/',
   '/manifest.json',
   '/icon.svg'
 ];
@@ -21,6 +20,7 @@ self.addEventListener('activate', (event) => {
       return Promise.all(
         cacheNames.map((cache) => {
           if (cache !== CACHE_NAME) {
+            console.log('Purging old PWA cache:', cache);
             return caches.delete(cache);
           }
         })
@@ -31,19 +31,29 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
-  // Only cache GET requests for static assets, network-first for APIs
-  if (event.request.method !== 'GET' || event.request.url.includes('/api/')) {
+  // Network-first policy for HTML pages and APIs to guarantee real-time OTA updates
+  if (event.request.mode === 'navigate' || event.request.url.includes('/api/')) {
+    event.respondWith(
+      fetch(event.request).catch(() => caches.match(event.request))
+    );
     return;
   }
   
+  // Stale-while-revalidate for static assets
   event.respondWith(
-    fetch(event.request)
-      .then((networkResponse) => {
+    caches.match(event.request).then((cachedResponse) => {
+      const fetchPromise = fetch(event.request).then((networkResponse) => {
+        if (networkResponse && networkResponse.status === 200) {
+          const responseToCache = networkResponse.clone();
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(event.request, responseToCache);
+          });
+        }
         return networkResponse;
-      })
-      .catch(() => {
-        return caches.match(event.request);
-      })
+      }).catch(() => cachedResponse);
+
+      return cachedResponse || fetchPromise;
+    })
   );
 });
 

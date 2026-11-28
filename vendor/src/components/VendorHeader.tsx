@@ -45,7 +45,7 @@ export default function VendorHeader({
   ];
 
   return (
-    <header className="sticky top-8 z-40 bg-slate-900/95 backdrop-blur-md border-b border-slate-800 shadow-xl">
+    <header className="sticky top-0 md:top-8 z-40 bg-slate-900/95 backdrop-blur-md border-b border-slate-800 shadow-xl">
       {/* Top Utility Bar (Partner Switcher & Fast Actions) */}
       <div className="bg-slate-950/90 px-4 sm:px-6 py-2 flex flex-wrap justify-between items-center text-xs border-b border-slate-800/80 gap-2">
         <div className="flex items-center gap-2">

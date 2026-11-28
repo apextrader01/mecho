@@ -224,8 +224,45 @@ export default function CategoryGrid({ onSelectCategory, openSosModal }: Categor
         </div>
       </div>
 
-      {/* Grid of 15 Services */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
+      {/* Mobile-First App Grid: 3-column native app tiles on mobile, 5-column cards on tablet/desktop */}
+      <div className="grid grid-cols-3 sm:hidden gap-2">
+        {filteredCategories.map((cat, idx) => {
+          const IconComponent = iconMap[cat.icon] || Sparkles;
+          const badge = getEngineBadge(cat.engineType);
+
+          return (
+            <div
+              key={cat.slug || cat.id || idx}
+              onClick={() => handleCardClick(cat)}
+              className="bg-white rounded-2xl p-2.5 border border-slate-200/90 shadow-xs hover:border-orange-500 flex flex-col items-center text-center justify-between cursor-pointer active:scale-95 transition-all min-h-[110px]"
+            >
+              <div className="w-11 h-11 rounded-2xl bg-orange-50 text-orange-600 flex items-center justify-center shadow-xs mb-1 relative">
+                <IconComponent className="w-5 h-5" />
+                {cat.basePrice > 0 ? (
+                  <span className="absolute -bottom-1 -right-1 bg-slate-900 text-[8px] font-black text-white px-1 rounded-full">
+                    ₹{cat.basePrice}
+                  </span>
+                ) : (
+                  <span className="absolute -bottom-1 -right-1 bg-indigo-600 text-[8px] font-black text-white px-1 rounded-full">
+                    RFQ
+                  </span>
+                )}
+              </div>
+              <span className="font-extrabold text-[11px] text-slate-800 leading-snug line-clamp-2 px-0.5">
+                {lang === 'hi' ? cat.nameHi : cat.name}
+              </span>
+              <span
+                className={`text-[8px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded-full mt-1 border ${badge.bg}`}
+              >
+                {badge.label}
+              </span>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Tablet & Desktop Grid: 3-5 column rich cards */}
+      <div className="hidden sm:grid sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
         {filteredCategories.map((cat, idx) => {
           const IconComponent = iconMap[cat.icon] || Sparkles;
           const badge = getEngineBadge(cat.engineType);

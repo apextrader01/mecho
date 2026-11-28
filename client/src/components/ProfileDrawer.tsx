@@ -303,6 +303,36 @@ export default function ProfileDrawer({ isOpen, onClose, onOpenLogin }: ProfileD
                 </button>
               </div>
             </div>
+
+            {/* ShortEdge Ecosystem / Mode Switcher */}
+            <div>
+              <h5 className="font-extrabold text-xs uppercase tracking-wider text-slate-400 mb-2">
+                ShortEdge Ecosystem Portals
+              </h5>
+              <div className="grid grid-cols-2 gap-2">
+                <a
+                  href="/vendor"
+                  className="p-2.5 rounded-2xl bg-sky-50 border border-sky-200 text-sky-900 hover:bg-sky-100 transition-all flex items-center gap-2"
+                >
+                  <span className="text-xl">🛵</span>
+                  <div>
+                    <span className="font-black text-xs block">Partner App</span>
+                    <span className="text-[10px] text-sky-700 block">Vendor & Runner</span>
+                  </div>
+                </a>
+
+                <a
+                  href="/admin"
+                  className="p-2.5 rounded-2xl bg-violet-50 border border-violet-200 text-violet-900 hover:bg-violet-100 transition-all flex items-center gap-2"
+                >
+                  <span className="text-xl">🎛️</span>
+                  <div>
+                    <span className="font-black text-xs block">Admin Command</span>
+                    <span className="text-[10px] text-violet-700 block">City Operations</span>
+                  </div>
+                </a>
+              </div>
+            </div>
           </div>
 
           {/* Footer Actions */}

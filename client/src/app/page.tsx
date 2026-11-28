@@ -121,10 +121,10 @@ export default function HomePage() {
           </div>
         )}
 
-        <main className={`flex-1 w-full mx-auto px-4 sm:px-6 py-5 pb-28 md:pb-8 space-y-6 ${isMobilePreview ? "max-w-md" : "max-w-7xl"}`}>
+        <main className={`flex-1 w-full mx-auto px-3 sm:px-6 py-3 sm:py-5 pb-28 md:pb-8 space-y-4 sm:space-y-6 ${isMobilePreview ? "max-w-md" : "max-w-7xl"}`}>
         {/* Dynamic View Switcher */}
         {activeTab === 'explore' && (
-          <div className="space-y-6">
+          <div className="space-y-4 sm:space-y-6">
             {/* Top Quick SOS Emergency Cards */}
             <SosSection
               onDispatchCreated={handleDispatchCreated}

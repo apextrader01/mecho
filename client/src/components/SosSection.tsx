@@ -306,56 +306,56 @@ export default function SosSection({ onDispatchCreated, sosModal, setSosModal }:
   };
 
   return (
-    <div className="mb-8">
+    <div className="mb-4 sm:mb-8">
       {/* 2 Big SOS Emergency Hero Buttons */}
-      <div className="bg-gradient-to-r from-red-500 via-rose-500 to-amber-500 p-1 rounded-3xl shadow-lg shadow-red-500/10">
-        <div className="bg-white rounded-[22px] p-4 sm:p-6">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-2">
-              <span className="relative flex h-3 w-3">
+      <div className="bg-gradient-to-r from-red-500 via-rose-500 to-amber-500 p-0.5 sm:p-1 rounded-2xl sm:rounded-3xl shadow-md sm:shadow-lg shadow-red-500/10">
+        <div className="bg-white rounded-[14px] sm:rounded-[22px] p-3 sm:p-6">
+          <div className="flex items-center justify-between mb-2 sm:mb-4">
+            <div className="flex items-center gap-1.5 sm:gap-2">
+              <span className="relative flex h-2.5 w-2.5 sm:h-3 sm:w-3">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
+                <span className="relative inline-flex rounded-full h-2.5 w-2.5 sm:h-3 sm:w-3 bg-red-500"></span>
               </span>
-              <h2 className="text-base sm:text-lg font-black tracking-tight text-slate-900 uppercase">
+              <h2 className="text-xs sm:text-lg font-black tracking-tight text-slate-900 uppercase">
                 {t.emergencySectionTitle}
               </h2>
             </div>
-            <span className="text-[11px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-full flex items-center gap-1">
-              <CheckCircle className="w-3.5 h-3.5 text-emerald-600" />
-              <span>24/7 Verified Partners Active</span>
+            <span className="text-[9px] sm:text-[11px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 sm:py-1 rounded-full flex items-center gap-1">
+              <CheckCircle className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-emerald-600" />
+              <span>24/7 Verified</span>
             </span>
           </div>
 
-          <p className="text-xs text-slate-500 mb-4">
+          <p className="text-[11px] sm:text-xs text-slate-500 mb-2.5 sm:mb-4 line-clamp-1">
             {t.sosSubtitle}
           </p>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+          <div className="grid grid-cols-2 gap-2 sm:gap-4">
             {/* SOS Button 1: Fuel Assist */}
             <div
               onClick={() => setSosModal('fuel')}
-              className="group cursor-pointer rounded-2xl p-4 bg-gradient-to-br from-amber-500 to-orange-600 text-white shadow-md hover:shadow-xl transition-all relative overflow-hidden flex flex-col justify-between min-h-[140px]"
+              className="group cursor-pointer rounded-xl sm:rounded-2xl p-2.5 sm:p-4 bg-gradient-to-br from-amber-500 to-orange-600 text-white shadow-sm sm:shadow-md hover:shadow-xl transition-all relative overflow-hidden flex flex-col justify-between min-h-[105px] sm:min-h-[140px] active:scale-95"
             >
               <div className="flex items-start justify-between">
-                <div className="p-3 bg-white/20 backdrop-blur-md rounded-xl">
-                  <Fuel className="w-6 h-6 text-white" />
+                <div className="p-1.5 sm:p-3 bg-white/20 backdrop-blur-md rounded-lg sm:rounded-xl">
+                  <Fuel className="w-4 h-4 sm:w-6 sm:h-6 text-white" />
                 </div>
-                <span className="bg-black/30 text-[10px] uppercase tracking-wider font-extrabold px-2.5 py-0.5 rounded-full text-white">
-                  Capped 2-5L
+                <span className="bg-black/30 text-[8px] sm:text-[10px] uppercase tracking-wider font-extrabold px-1.5 sm:px-2.5 py-0.5 rounded-full text-white">
+                  2-5L
                 </span>
               </div>
-              <div>
-                <h3 className="font-extrabold text-base sm:text-lg leading-tight">
+              <div className="mt-1 sm:mt-2">
+                <h3 className="font-extrabold text-xs sm:text-lg leading-tight line-clamp-1">
                   {t.fuelAssistTitle}
                 </h3>
-                <p className="text-xs text-orange-100 mt-1 line-clamp-1">
-                  2-5 Liters Emergency reach-to-pump Runner
+                <p className="text-[10px] sm:text-xs text-orange-100 mt-0.5 line-clamp-1">
+                  15-min Reach Runner
                 </p>
               </div>
-              <div className="flex items-center justify-between pt-2 border-t border-white/20 text-xs font-semibold">
-                <span>Petrol & Diesel</span>
-                <span className="underline group-hover:translate-x-1 transition-transform">
-                  Tap to Dispatch →
+              <div className="flex items-center justify-between pt-1.5 sm:pt-2 border-t border-white/20 text-[9px] sm:text-xs font-semibold">
+                <span className="truncate">Petrol & Diesel</span>
+                <span className="shrink-0 underline group-hover:translate-x-1 transition-transform">
+                  Dispatch →
                 </span>
               </div>
             </div>
@@ -363,28 +363,28 @@ export default function SosSection({ onDispatchCreated, sosModal, setSosModal }:
             {/* SOS Button 2: Tyre & Puncture */}
             <div
               onClick={() => setSosModal('puncture')}
-              className="group cursor-pointer rounded-2xl p-4 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white shadow-md hover:shadow-xl transition-all relative overflow-hidden flex flex-col justify-between min-h-[140px]"
+              className="group cursor-pointer rounded-xl sm:rounded-2xl p-2.5 sm:p-4 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white shadow-sm sm:shadow-md hover:shadow-xl transition-all relative overflow-hidden flex flex-col justify-between min-h-[105px] sm:min-h-[140px] active:scale-95"
             >
               <div className="flex items-start justify-between">
-                <div className="p-3 bg-white/10 backdrop-blur-md rounded-xl">
-                  <Wrench className="w-6 h-6 text-orange-400" />
+                <div className="p-1.5 sm:p-3 bg-white/10 backdrop-blur-md rounded-lg sm:rounded-xl">
+                  <Wrench className="w-4 h-4 sm:w-6 sm:h-6 text-orange-400" />
                 </div>
-                <span className="bg-red-500 text-[10px] uppercase tracking-wider font-extrabold px-2.5 py-0.5 rounded-full text-white">
+                <span className="bg-red-500 text-[8px] sm:text-[10px] uppercase tracking-wider font-extrabold px-1.5 sm:px-2.5 py-0.5 rounded-full text-white">
                   24/7 Rapid
                 </span>
               </div>
-              <div>
-                <h3 className="font-extrabold text-base sm:text-lg leading-tight">
+              <div className="mt-1 sm:mt-2">
+                <h3 className="font-extrabold text-xs sm:text-lg leading-tight line-clamp-1">
                   {t.tyreRoadsideTitle}
                 </h3>
-                <p className="text-xs text-slate-300 mt-1 line-clamp-1">
-                  Mechanic Arrival in 15-20 Mins
+                <p className="text-[10px] sm:text-xs text-slate-300 mt-0.5 line-clamp-1">
+                  Mechanic in 15-20 Mins
                 </p>
               </div>
-              <div className="flex items-center justify-between pt-2 border-t border-slate-700 text-xs font-semibold text-slate-300">
-                <span>Puncture, Jumpstart, Towing</span>
-                <span className="underline text-orange-400 group-hover:translate-x-1 transition-transform">
-                  Tap to Call →
+              <div className="flex items-center justify-between pt-1.5 sm:pt-2 border-t border-slate-700 text-[9px] sm:text-xs font-semibold text-slate-300">
+                <span className="truncate">Puncture & Towing</span>
+                <span className="shrink-0 underline text-orange-400 group-hover:translate-x-1 transition-transform">
+                  Call →
                 </span>
               </div>
             </div>
