@@ -90,7 +90,7 @@ lint/tmp/
 *.hprof
 
 # Cordova plugins for Capacitor
-# capacitor-cordova-android-plugins
+capacitor-cordova-android-plugins
 
 # Generated Config and assets needed for standalone CI builds
 # app/src/main/assets/public
