@@ -1,4 +1,4 @@
-name: Build ShortEdge Android APK
+name: Build ShortEdge Android APKs (Customer, Partner, Admin)
 
 on:
   push:
@@ -6,8 +6,8 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-apk:
-    name: Build Debug APK
+  build-apks:
+    name: Build All 3 Android APKs
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -43,7 +43,7 @@ jobs:
       - name: Grant Execute Permission for Gradlew
         run: chmod +x client/android/gradlew
 
-      - name: Build Android Debug APK
+      - name: Build All 3 Android Debug APKs
         run: |
           cd client/android
           ./gradlew assembleDebug --no-daemon --stacktrace > ../../build_error.txt 2>&1 || (
@@ -52,15 +52,36 @@ jobs:
             exit 1
           )
 
-      - name: Check Output APK
+      - name: Inspect Built APKs
         run: |
-          ls -la client/android/app/build/outputs/apk/debug/
+          find client/android/app/build/outputs/apk/ -name "*.apk"
 
-      - name: Upload Debug APK Artifact
+      - name: Upload Customer Super-App APK
         uses: actions/upload-artifact@v4
         with:
-          name: ShortEdge-Debug-APK
-          path: client/android/app/build/outputs/apk/debug/*.apk
+          name: ShortEdge-Customer-APK
+          path: client/android/app/build/outputs/apk/customer/debug/*.apk
+          if-no-files-found: error
+
+      - name: Upload Partner / Vendor APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: ShortEdge-Partner-APK
+          path: client/android/app/build/outputs/apk/partner/debug/*.apk
+          if-no-files-found: error
+
+      - name: Upload Admin Central Command APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: ShortEdge-Admin-APK
+          path: client/android/app/build/outputs/apk/admin/debug/*.apk
+          if-no-files-found: error
+
+      - name: Upload All 3 APKs Bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: ShortEdge-All-3-APKs-Bundle
+          path: client/android/app/build/outputs/apk/**/*.apk
           if-no-files-found: error
 
       - name: Save Build Log on Failure

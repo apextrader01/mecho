@@ -22,6 +22,21 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    flavorDimensions = ["role"]
+    productFlavors {
+        customer {
+            dimension "role"
+            applicationId "in.shortedge.app"
+        }
+        partner {
+            dimension "role"
+            applicationId "in.shortedge.partner"
+        }
+        admin {
+            dimension "role"
+            applicationId "in.shortedge.admin"
+        }
+    }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_21
         targetCompatibility JavaVersion.VERSION_21

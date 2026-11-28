@@ -1,0 +1,9 @@
+{
+  "appId": "in.shortedge.partner",
+  "appName": "SE Partner",
+  "webDir": "public",
+  "server": {
+    "url": "https://dramatic-newbie-sky-chances.trycloudflare.com/vendor",
+    "cleartext": true
+  }
+}
